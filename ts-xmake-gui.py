@@ -23,19 +23,12 @@ class MainWin(tk.Frame):
         self.make=tk.Button(self,text="Make!",command=self.action_make)
         self.make.pack()
 
-        self.console=tk.Text(self,state='disabled')
-        self.console.pack()
-
     def action_browse_projectdir(self):
         self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
 
     def action_make(self):
         os.chdir(self.projectdir_input_content.get())
-        px=sp.Popen(["xmake"],universal_newlines=True,stdout=sp.PIPE,stderr=sp.STDOUT)
-        for ln in px.stdout:
-            self.console.configure(state='normal')
-            self.console.insert("end",ln)
-            self.console.configure(state='disabled')
+        sp.Popen(["xterm","-e","xmake;python -c 'raw_input()'"])
 
 win=MainWin()
 win.master.title("xmake")
