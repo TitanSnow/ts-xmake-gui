@@ -3,7 +3,7 @@
 import Tkinter as tk
 import tkFileDialog
 import os
-import subprocess as sp
+import terminal
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -28,7 +28,7 @@ class MainWin(tk.Frame):
 
     def action_make(self):
         os.chdir(self.projectdir_input_content.get())
-        sp.Popen(["xterm","-e","xmake;python -c 'raw_input()'"])
+        terminal.run_keep_window("xmake")
 
 win=MainWin()
 win.master.title("xmake")
