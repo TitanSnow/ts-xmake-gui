@@ -1,6 +1,19 @@
 import json
-import re
 def loads(st):
-    rg = r'\[("(?:[^"]|\\")*")\] ='
-    rst = re.sub(rg, r'\1:', st)
-    return json.loads(rst)
+    rst=[]
+    non=0
+    inq=False
+    for ch in st:
+        if ch=='"':
+            if non<=0:
+                inq=not inq;
+        elif ch=="\\":
+            if inq and non<=0:
+                non=2
+        rst.append(ch)
+        if (ch=="[" or ch=="]") and not inq:
+            rst.pop()
+        if ch=="=" and not inq:
+            rst[-1]=":"
+        --non
+    return json.loads(''.join(rst))
