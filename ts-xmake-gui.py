@@ -32,18 +32,26 @@ class MainWin(tk.Frame):
         self.clean=tk.Button(self,text="Clean",command=self.action_clean)
         self.clean.pack()
 
+        self.distclean=tk.Button(self,text="Distclean",command=self.action_distclean)
+        self.distclean.pack()
+
     def action_browse_projectdir(self):
         self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
 
-    def action_common(self,action):
+    def action_common(self,action,after_script=""):
         os.chdir(self.projectdir_input_content.get())
-        terminal.run_keep_window("xmake "+action)
+        if after_script:
+            after_script=";"+after_script
+        terminal.run_keep_window("xmake "+action+after_script)
 
     def action_build(self):
         self.action_common("build")
 
     def action_clean(self):
         self.action_common("clean")
+
+    def action_distclean(self):
+        self.action_common("clean","rm -r .xmake")
 
 win=MainWin()
 win.master.title("xmake")
