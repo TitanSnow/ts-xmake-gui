@@ -5,6 +5,7 @@ import tkFileDialog
 import os
 import terminal
 from shutil import rmtree
+import conf_parse as cp
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -39,14 +40,29 @@ class MainWin(tk.Frame):
         self.distclean=tk.Button(self,text="Distclean",command=self.action_distclean)
         self.distclean.pack()
 
+        self.label_target=tk.Label(self,text="Target")
+        self.label_target.pack()
+
+        self.target_list=tk.Listbox(self)
+        self.target_list.pack()
+
+        self.reflesh_target_list()
+
     def action_browse_projectdir(self):
         self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
+        self.reflesh_target_list()
 
     def action_common(self,action,after_script=""):
         os.chdir(self.projectdir_input_content.get())
         if after_script:
             after_script=";"+after_script
-        terminal.run_keep_window("xmake "+action+after_script)
+        target=self.target_list.curselection()
+        if not target:
+            target=""
+        else:
+            target=self.targets[target[0]]
+        terminal.run_keep_window("xmake "+action+" "+target+after_script)
+        self.reflesh_target_list()
 
     def action_build(self):
         self.action_common("build")
@@ -57,9 +73,30 @@ class MainWin(tk.Frame):
     def action_distclean(self):
         self.action_common("clean")
         rmtree(".xmake")
+        self.reflesh_target_list()
 
     def action_config(self):
         self.action_common("config")
+
+    def read_conf(self):
+        try:
+            os.chdir(self.projectdir_input_content.get())
+            f=open(".xmake/xmake.conf","r")
+            configs=cp.loads(f.read())
+            f.close()
+            return configs
+        except:
+            return
+
+    def reflesh_target_list(self):
+        configs=self.read_conf() or {}
+        targets={}
+        if "_TARGETS" in configs:
+            targets=configs["_TARGETS"]
+        self.target_list.delete(0,self.target_list.size()-1)
+        for key in targets:
+            self.target_list.insert(tk.END,key)
+        self.targets=[key for key in targets]
 
 win=MainWin()
 win.master.title("xmake")
