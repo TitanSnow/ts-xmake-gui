@@ -34,6 +34,9 @@ class MainWin(tk.Frame):
         self.build=tk.Button(self,text="Build",command=self.action_build)
         self.build.pack()
 
+        self.rebuild=tk.Button(self,text="Rebuild",command=self.action_rebuild)
+        self.rebuild.pack()
+
         self.clean=tk.Button(self,text="Clean",command=self.action_clean)
         self.clean.pack()
 
@@ -66,6 +69,9 @@ class MainWin(tk.Frame):
 
     def action_build(self):
         self.action_common("build")
+
+    def action_rebuild(self):
+        self.action_common("build -r")
 
     def action_clean(self):
         self.action_common("clean")
