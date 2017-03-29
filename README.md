@@ -5,5 +5,5 @@ An ugly xmake gui
 
 * xmake
 * xterm
-* python2 in path as 'python'
+* python2
 * python-tk
