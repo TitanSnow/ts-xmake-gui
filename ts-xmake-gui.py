@@ -4,6 +4,7 @@ import Tkinter as tk
 import tkFileDialog
 import os
 import terminal
+from shutil import rmtree
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -26,7 +27,10 @@ class MainWin(tk.Frame):
         self.label_action=tk.Label(self,text="Action")
         self.label_action.pack()
 
-        self.build=tk.Button(self,text="Build!",command=self.action_build)
+        self.config=tk.Button(self,text="Configure",command=self.action_config)
+        self.config.pack()
+
+        self.build=tk.Button(self,text="Build",command=self.action_build)
         self.build.pack()
 
         self.clean=tk.Button(self,text="Clean",command=self.action_clean)
@@ -51,7 +55,11 @@ class MainWin(tk.Frame):
         self.action_common("clean")
 
     def action_distclean(self):
-        self.action_common("clean","rm -r .xmake")
+        self.action_common("clean")
+        rmtree(".xmake")
+
+    def action_config(self):
+        self.action_common("config")
 
 win=MainWin()
 win.master.title("xmake")
