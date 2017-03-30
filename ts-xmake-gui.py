@@ -99,7 +99,7 @@ class MainWin(tk.Frame):
         targets={}
         if "_TARGETS" in configs:
             targets=configs["_TARGETS"]
-        self.target_list.delete(0,self.target_list.size()-1)
+        self.target_list.delete(0,tk.END)
         for key in targets:
             self.target_list.insert(tk.END,key)
         self.targets=[key for key in targets]
