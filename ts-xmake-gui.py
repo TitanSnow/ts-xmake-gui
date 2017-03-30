@@ -99,7 +99,20 @@ class MainWin(tk.Frame):
         self.reflesh_configarea()
 
     def action_config(self):
-        self.action_common("config")
+        st=self.configarea.get(1.0,tk.END)
+        tarconf=None
+        try:
+            tarconf=json.loads(st)
+            if not self.origin_config:
+                raise()
+        except:
+            self.action_common("config")
+            return
+        cfs=[]
+        for key,value in tarconf.items():
+            if not key in self.origin_config or value!=self.origin_config[key]:
+                cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
+        self.action_common("config "+''.join(cfs))
 
     def action_reload_conf(self):
         self.reflesh_configarea()
@@ -134,6 +147,7 @@ class MainWin(tk.Frame):
                 tarconf=configs["_TARGETS"][target]
                 st=json.dumps(tarconf,indent=4,separators=(',',': '))
                 self.configarea.insert(tk.END,st)
+                self.origin_config=tarconf
 
 win=MainWin()
 win.master.title("xmake")
