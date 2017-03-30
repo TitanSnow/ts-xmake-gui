@@ -53,10 +53,10 @@ class MainWin(tk.Frame):
         self.label_config=tk.Label(self,text="Config")
         self.label_config.pack()
 
-        self.reload_conf=tk.Button(self,text="Reload",command=self.action_reload_conf)
+        self.reload_conf=tk.Button(self,text="Load",command=self.action_reload_conf)
         self.reload_conf.pack()
 
-        self.reconfig=tk.Button(self,text="Reconfig",command=self.action_config)
+        self.reconfig=tk.Button(self,text="Config",command=self.action_config)
         self.reconfig.pack()
 
         self.configarea=tk.Text(self)
