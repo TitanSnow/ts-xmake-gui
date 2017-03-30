@@ -1,6 +1,4 @@
-import platform
-osname=platform.system()
-if osname == "Linux":
+try:
     from xterm import *
-else:
-    raise("Not implemented on this system")
+except:
+    from curshell import *
