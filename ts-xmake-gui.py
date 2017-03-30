@@ -6,6 +6,7 @@ import os
 import terminal
 from shutil import rmtree
 import conf_parse as cp
+import json
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -28,7 +29,7 @@ class MainWin(tk.Frame):
         self.label_action=tk.Label(self,text="Action")
         self.label_action.pack()
 
-        self.config=tk.Button(self,text="Configure",command=self.action_config)
+        self.config=tk.Button(self,text="Config",command=self.action_config)
         self.config.pack()
 
         self.build=tk.Button(self,text="Build",command=self.action_build)
@@ -49,11 +50,25 @@ class MainWin(tk.Frame):
         self.target_list=tk.Listbox(self)
         self.target_list.pack()
 
+        self.label_config=tk.Label(self,text="Config")
+        self.label_config.pack()
+
+        self.reload_conf=tk.Button(self,text="Reload",command=self.action_reload_conf)
+        self.reload_conf.pack()
+
+        self.reconfig=tk.Button(self,text="Reconfig",command=self.action_config)
+        self.reconfig.pack()
+
+        self.configarea=tk.Text(self)
+        self.configarea.pack()
+
         self.reflesh_target_list()
+        self.reflesh_configarea()
 
     def action_browse_projectdir(self):
         self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
+        self.reflesh_configarea()
 
     def action_common(self,action,after_script=""):
         os.chdir(self.projectdir_input_content.get())
@@ -66,6 +81,7 @@ class MainWin(tk.Frame):
             target=self.targets[target[0]]
         terminal.run_keep_window("xmake "+action+" "+target+after_script)
         self.reflesh_target_list()
+        self.reflesh_configarea()
 
     def action_build(self):
         self.action_common("build")
@@ -80,9 +96,13 @@ class MainWin(tk.Frame):
         self.action_common("clean")
         rmtree(".xmake")
         self.reflesh_target_list()
+        self.reflesh_configarea()
 
     def action_config(self):
         self.action_common("config")
+
+    def action_reload_conf(self):
+        self.reflesh_configarea()
 
     def read_conf(self):
         try:
@@ -103,6 +123,17 @@ class MainWin(tk.Frame):
         for key in targets:
             self.target_list.insert(tk.END,key)
         self.targets=[key for key in targets]
+
+    def reflesh_configarea(self):
+        self.configarea.delete(1.0,tk.END)
+        target=self.target_list.curselection()
+        if target:
+            target=self.targets[target[0]]
+            configs=self.read_conf()
+            if configs and "_TARGETS" in configs and target in configs["_TARGETS"]:
+                tarconf=configs["_TARGETS"][target]
+                st=json.dumps(tarconf,indent=4,separators=(',',': '))
+                self.configarea.insert(tk.END,st)
 
 win=MainWin()
 win.master.title("xmake")
