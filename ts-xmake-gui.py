@@ -7,6 +7,7 @@ import terminal
 from shutil import rmtree
 import conf_parse as cp
 import json
+from tkMessageBox import showinfo
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -151,4 +152,9 @@ class MainWin(tk.Frame):
 
 win=MainWin()
 win.master.title("xmake")
+menubar=tk.Menu(win.master)
+def show_about():
+    showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense")
+menubar.add_command(label="About",command=show_about)
+win.master.config(menu=menubar)
 win.mainloop()
