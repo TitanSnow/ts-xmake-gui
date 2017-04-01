@@ -7,7 +7,7 @@ import terminal
 from shutil import rmtree
 import conf_parse as cp
 import json
-from tkMessageBox import showinfo
+from tkMessageBox import showinfo,showerror
 
 class MainWin(tk.Frame):
     def __init__(self,master=None):
@@ -175,10 +175,12 @@ win=MainWin()
 win.master.title("xmake")
 menubar=tk.Menu(win.master)
 def show_about():
-    showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense")
+    showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
 mn_option=tk.Menu(win.master)
 mn_option.add_command(label="xmake path",command=win.config_xmake_path)
 menubar.add_cascade(label="Option",menu=mn_option)
 menubar.add_command(label="About",command=show_about)
 win.master.config(menu=menubar)
+if os.system("xmake --version")!=0:
+    showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
 win.mainloop()
