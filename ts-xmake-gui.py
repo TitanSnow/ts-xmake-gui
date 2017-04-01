@@ -111,8 +111,9 @@ class MainWin(tk.Frame):
             return
         cfs=[]
         for key,value in tarconf.items():
-            if not key in self.origin_config or value!=self.origin_config[key]:
-                cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
+            key=str(key)
+            value=str(value)
+            cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
         self.action_common("config "+''.join(cfs))
 
     def action_reload_conf(self):
