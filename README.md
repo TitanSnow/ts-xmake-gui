@@ -3,7 +3,7 @@ An ugly xmake gui
 
 ## require
 
-* xmake
+* [xmake](https://github.com/tboox/xmake) 2.1.3+
 * better if have xterm
 * python2
 * python-tk
