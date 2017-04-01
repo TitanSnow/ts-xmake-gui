@@ -83,6 +83,8 @@ class MainWin(tk.Frame):
             target=""
         else:
             target=self.targets[target[0]]
+        target="--all" if target=="all" else target
+        target="" if target=="--all" and action[:len("config")]=="config" else target
         args=[]
         if self.option_verbose:
             args.append("--verbose")
