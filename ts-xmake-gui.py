@@ -71,16 +71,14 @@ class MainWin(tk.Frame):
         self.reflesh_target_list()
         self.reflesh_configarea()
 
-    def action_common(self,action,after_script=""):
+    def action_common(self,action):
         os.chdir(self.projectdir_input_content.get())
-        if after_script:
-            after_script=";"+after_script
         target=self.target_list.curselection()
         if not target:
             target=""
         else:
             target=self.targets[target[0]]
-        terminal.run_keep_window("xmake "+action+" "+target+after_script)
+        terminal.run_keep_window("xmake "+action+" "+target)
         self.reflesh_target_list()
         self.reflesh_configarea()
 
