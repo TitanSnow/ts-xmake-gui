@@ -23,6 +23,7 @@ class MainWin(tk.Frame):
         self.projectdir_input_content.set(os.getenv("HOME"))
         self.projectdir_input=tk.Entry(self,textvariable=self.projectdir_input_content)
         self.projectdir_input.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=1,column=0,columnspan=4)
+        self.projectdir_input.bind("<Return>",self.callback_projectdir_input_return)
 
         self.browse_projectdir=tk.Button(self,text="Browse Project Dir",command=self.action_browse_projectdir)
         self.browse_projectdir.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=1,column=4,columnspan=2)
@@ -50,6 +51,8 @@ class MainWin(tk.Frame):
 
         self.target_list=tk.Listbox(self,width=0)
         self.target_list.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=0,columnspan=2,rowspan=2)
+        self.target_list.bind("<ButtonRelease-1>",self.callback_target_list_click)
+        self.target_list.bind("<Return>",self.callback_target_list_click)
 
         self.label_config=tk.Label(self,text="Config")
         self.label_config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=2,columnspan=4)
@@ -160,6 +163,13 @@ class MainWin(tk.Frame):
             return self.xmake_path
         except:
             return "xmake"
+
+    def callback_projectdir_input_return(self,event):
+        self.reflesh_target_list()
+        self.reflesh_configarea()
+
+    def callback_target_list_click(self,event):
+        self.reflesh_configarea()
 
 win=MainWin()
 win.master.title("xmake")
