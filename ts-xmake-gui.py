@@ -8,6 +8,7 @@ from shutil import rmtree
 import conf_parse as cp
 import json
 from tkMessageBox import showinfo,showerror
+from threading import Timer
 
 tiped_exception=set()
 def error_handle(func):
@@ -255,6 +256,9 @@ def main():
         showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
     else:
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
+    def clear_tiped_exception():
+        tiped_exception=set()
+    Timer(60,clear_tiped_exception).start()
     win.mainloop()
 if __name__=="__main__":
     main()
