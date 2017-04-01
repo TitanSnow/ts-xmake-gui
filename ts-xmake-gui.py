@@ -11,6 +11,7 @@ from tkMessageBox import showinfo,showerror
 from threading import Timer
 import subprocess as sp
 import re
+import webbrowser as wb
 
 min_xmake_ver=20000100003L
 
@@ -277,7 +278,7 @@ def main():
         showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
     @error_handle
     def show_help():
-        pass
+        wb.open("https://github.com/TitanSnow/ts-xmake-gui/blob/master/README.md",1,True)
     mn_option=tk.Menu(root)
     mn_option.add_command(label="xmake path",command=win.config_xmake_path)
     mn_option.add_checkbutton(label="verbose",command=win.toggle_verbose)
