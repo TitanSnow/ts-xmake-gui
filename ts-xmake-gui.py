@@ -9,6 +9,10 @@ import conf_parse as cp
 import json
 from tkMessageBox import showinfo,showerror
 from threading import Timer
+import subprocess as sp
+import re
+
+min_xmake_ver=20000100003L
 
 tiped_exception=set()
 def error_handle(func):
@@ -202,7 +206,30 @@ class MainWin(tk.Frame):
 
     @error_handle
     def test_xmake_path(self):
-        return os.system(self.get_xmake_path()+" --version")==0
+        #return os.system(self.get_xmake_path()+" --version")==0
+        try:
+            process=sp.Popen(["xmake","--version"],stdout=sp.PIPE)
+            returncode=process.wait()
+            if returncode!=0:
+                raise()
+            out=process.stdout.read()
+            rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
+            ver=rst.groups()
+            self.xmake_version='.'.join(ver)
+            ver=long(''.join(["%05d"%int(x) for x in ver]))
+            if ver>=min_xmake_ver:
+                return True
+            raise()
+        except:
+            return False
+
+    @error_handle
+    def get_xmake_version(self):
+        try:
+            return self.xmake_version
+        except:
+            self.test_xmake_path()
+            return self.xmake_version
 
     @error_handle
     def config_xmake_path(self):
@@ -211,7 +238,7 @@ class MainWin(tk.Frame):
             self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t..FAIL!"
             showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
         else:
-            self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t..OK"
+            self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t.. "+self.get_xmake_version()
 
     @error_handle
     def get_xmake_path(self):
@@ -254,9 +281,9 @@ def main():
     win.master.config(menu=menubar)
     if not win.test_xmake_path():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
-        showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
+        showerror("Error","xmake not found or version is too low!\n\nIf you're sure you have installed xmake 2.1.3+, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
     else:
-        win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
+        win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t.. "+win.get_xmake_version()
     def clear_tiped_exception():
         global cte_thread
         tiped_exception=set()
