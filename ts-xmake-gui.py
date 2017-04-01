@@ -68,6 +68,12 @@ class MainWin(tk.Frame):
         self.configarea=tk.Text(self,width=0)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
+        self.label_status=tk.Label(self,text="Status")
+        self.label_status.grid(sticky=tk.W,row=7,columnspan=6)
+
+        self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
+        self.label_xmake_path.grid(sticky=tk.W,row=8,columnspan=6)
+
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -165,8 +171,16 @@ class MainWin(tk.Frame):
     def askpath(self,title):
         return tkFileDialog.askopenfilename(parent=self,title=title)
 
+    def test_xmake_path(self):
+        return os.system(self.get_xmake_path()+" --version")==0
+
     def config_xmake_path(self):
         self.xmake_path=self.askpath("Browse xmake path")
+        if not self.test_xmake_path():
+            self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t..FAIL!"
+            showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
+        else:
+            self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t..OK"
 
     def get_xmake_path(self):
         try:
@@ -199,6 +213,9 @@ mn_option.add_checkbutton(label="backtrace",command=win.toggle_backtrace)
 menubar.add_cascade(label="Option",menu=mn_option)
 menubar.add_command(label="About",command=show_about)
 win.master.config(menu=menubar)
-if os.system("xmake --version")!=0:
+if not win.test_xmake_path():
+    win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
     showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
+else:
+    win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
 win.mainloop()
