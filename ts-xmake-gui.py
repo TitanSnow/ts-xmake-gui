@@ -9,7 +9,22 @@ import conf_parse as cp
 import json
 from tkMessageBox import showinfo,showerror
 
+tiped_exception=set()
+def error_handle(func):
+    def _func(*args,**kwargs):
+        try:
+            return func(*args,**kwargs)
+        except Exception,err:
+            if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err))
+            tiped_exception.add(err)
+            raise
+        except:
+            showerror("Internal Exception","Sorry, there is an unknown internal exception happened")
+            raise
+    return _func
+
 class MainWin(tk.Frame):
+    @error_handle
     def __init__(self,master=None):
         tk.Frame.__init__(self,master)
         self.pack()
@@ -17,6 +32,7 @@ class MainWin(tk.Frame):
         self.option_verbose=False
         self.option_backtrace=False
 
+    @error_handle
     def createWidgets(self):
         self.label_project=tk.Label(self,text="Project")
         self.label_project.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=0,column=0,columnspan=6)
@@ -77,11 +93,13 @@ class MainWin(tk.Frame):
         self.reflesh_target_list()
         self.reflesh_configarea()
 
+    @error_handle
     def action_browse_projectdir(self):
         self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
         self.reflesh_configarea()
 
+    @error_handle
     def action_common(self,action):
         os.chdir(self.projectdir_input_content.get())
         target=self.target_list.curselection()
@@ -101,21 +119,26 @@ class MainWin(tk.Frame):
         self.reflesh_target_list()
         self.reflesh_configarea()
 
+    @error_handle
     def action_build(self):
         self.action_common("build")
 
+    @error_handle
     def action_rebuild(self):
         self.action_common("build -r")
 
+    @error_handle
     def action_clean(self):
         self.action_common("clean")
 
+    @error_handle
     def action_distclean(self):
         self.action_common("clean")
         rmtree(".xmake")
         self.reflesh_target_list()
         self.reflesh_configarea()
 
+    @error_handle
     def action_config(self):
         st=self.configarea.get(1.0,tk.END)
         tarconf=None
@@ -133,9 +156,11 @@ class MainWin(tk.Frame):
             cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
         self.action_common("config "+''.join(cfs))
 
+    @error_handle
     def action_reload_conf(self):
         self.reflesh_configarea()
 
+    @error_handle
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
@@ -146,6 +171,7 @@ class MainWin(tk.Frame):
         except:
             return
 
+    @error_handle
     def reflesh_target_list(self):
         configs=self.read_conf() or {}
         targets={}
@@ -156,6 +182,7 @@ class MainWin(tk.Frame):
             self.target_list.insert(tk.END,key)
         self.targets=[key for key in targets]
 
+    @error_handle
     def reflesh_configarea(self):
         self.configarea.delete(1.0,tk.END)
         target=self.target_list.curselection()
@@ -168,12 +195,15 @@ class MainWin(tk.Frame):
                 self.configarea.insert(tk.END,st)
                 self.origin_config=tarconf
 
+    @error_handle
     def askpath(self,title):
         return tkFileDialog.askopenfilename(parent=self,title=title)
 
+    @error_handle
     def test_xmake_path(self):
         return os.system(self.get_xmake_path()+" --version")==0
 
+    @error_handle
     def config_xmake_path(self):
         self.xmake_path=self.askpath("Browse xmake path")
         if not self.test_xmake_path():
@@ -182,40 +212,49 @@ class MainWin(tk.Frame):
         else:
             self.label_xmake_path["text"]="xmake_path: "+self.get_xmake_path()+"\t..OK"
 
+    @error_handle
     def get_xmake_path(self):
         try:
             return self.xmake_path
         except:
             return "xmake"
 
+    @error_handle
     def callback_projectdir_input_return(self,event):
         self.reflesh_target_list()
         self.reflesh_configarea()
 
+    @error_handle
     def callback_target_list_click(self,event):
         self.reflesh_configarea()
 
+    @error_handle
     def toggle_verbose(self):
         self.option_verbose=not self.option_verbose
 
+    @error_handle
     def toggle_backtrace(self):
         self.option_backtrace=not self.option_backtrace
 
-win=MainWin()
-win.master.title("xmake")
-menubar=tk.Menu(win.master)
-def show_about():
-    showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
-mn_option=tk.Menu(win.master)
-mn_option.add_command(label="xmake path",command=win.config_xmake_path)
-mn_option.add_checkbutton(label="verbose",command=win.toggle_verbose)
-mn_option.add_checkbutton(label="backtrace",command=win.toggle_backtrace)
-menubar.add_cascade(label="Option",menu=mn_option)
-menubar.add_command(label="About",command=show_about)
-win.master.config(menu=menubar)
-if not win.test_xmake_path():
-    win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
-    showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
-else:
-    win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
-win.mainloop()
+@error_handle
+def main():
+    win=MainWin()
+    win.master.title("xmake")
+    menubar=tk.Menu(win.master)
+    def show_about():
+        showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
+    mn_option=tk.Menu(win.master)
+    mn_option.add_command(label="xmake path",command=win.config_xmake_path)
+    mn_option.add_checkbutton(label="verbose",command=win.toggle_verbose)
+    mn_option.add_checkbutton(label="backtrace",command=win.toggle_backtrace)
+    menubar.add_cascade(label="Option",menu=mn_option)
+    menubar.add_command(label="About",command=show_about)
+    win.master.config(menu=menubar)
+    if not win.test_xmake_path():
+        win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
+        showerror("Error","xmake not found!\n\nIf you're sure you have installed xmake, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
+    else:
+        win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
+    win.mainloop()
+if __name__=="__main__":
+    main()
