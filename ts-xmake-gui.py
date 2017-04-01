@@ -156,9 +156,8 @@ class MainWin(tk.Frame):
             return
         cfs=[]
         for key,value in tarconf.items():
-            key=str(key)
-            value=str(value)
-            cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
+            if isinstance(key,str) and isinstance(value,str):
+                cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
         self.action_common("config "+''.join(cfs))
 
     @error_handle
