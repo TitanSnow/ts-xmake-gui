@@ -78,7 +78,7 @@ class MainWin(tk.Frame):
             target=""
         else:
             target=self.targets[target[0]]
-        terminal.run_keep_window("xmake "+action+" "+target)
+        terminal.run_keep_window(self.get_xmake_path()+" "+action+" "+target)
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -149,11 +149,26 @@ class MainWin(tk.Frame):
                 self.configarea.insert(tk.END,st)
                 self.origin_config=tarconf
 
+    def askpath(self,title):
+        return tkFileDialog.askopenfilename(parent=self,title=title)
+
+    def config_xmake_path(self):
+        self.xmake_path=self.askpath("Browse xmake path")
+
+    def get_xmake_path(self):
+        try:
+            return self.xmake_path
+        except:
+            return "xmake"
+
 win=MainWin()
 win.master.title("xmake")
 menubar=tk.Menu(win.master)
 def show_about():
     showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense")
+mn_option=tk.Menu(win.master)
+mn_option.add_command(label="xmake path",command=win.config_xmake_path)
+menubar.add_cascade(label="Option",menu=mn_option)
 menubar.add_command(label="About",command=show_about)
 win.master.config(menu=menubar)
 win.mainloop()
