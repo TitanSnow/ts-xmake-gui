@@ -14,6 +14,8 @@ class MainWin(tk.Frame):
         tk.Frame.__init__(self,master)
         self.pack()
         self.createWidgets()
+        self.option_verbose=False
+        self.option_backtrace=False
 
     def createWidgets(self):
         self.label_project=tk.Label(self,text="Project")
@@ -81,7 +83,13 @@ class MainWin(tk.Frame):
             target=""
         else:
             target=self.targets[target[0]]
-        terminal.run_keep_window(self.get_xmake_path()+" "+action+" "+target)
+        args=[]
+        if self.option_verbose:
+            args.append("--verbose")
+        if self.option_backtrace:
+            args.append("--backtrace")
+        args=' '.join(args)
+        terminal.run_keep_window(self.get_xmake_path()+" "+action+" "+args+" "+target)
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -171,6 +179,12 @@ class MainWin(tk.Frame):
     def callback_target_list_click(self,event):
         self.reflesh_configarea()
 
+    def toggle_verbose(self):
+        self.option_verbose=not self.option_verbose
+
+    def toggle_backtrace(self):
+        self.option_backtrace=not self.option_backtrace
+
 win=MainWin()
 win.master.title("xmake")
 menubar=tk.Menu(win.master)
@@ -178,6 +192,8 @@ def show_about():
     showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
 mn_option=tk.Menu(win.master)
 mn_option.add_command(label="xmake path",command=win.config_xmake_path)
+mn_option.add_checkbutton(label="verbose",command=win.toggle_verbose)
+mn_option.add_checkbutton(label="backtrace",command=win.toggle_backtrace)
 menubar.add_cascade(label="Option",menu=mn_option)
 menubar.add_command(label="About",command=show_about)
 win.master.config(menu=menubar)
