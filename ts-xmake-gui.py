@@ -12,6 +12,7 @@ from threading import Timer
 import subprocess as sp
 import re
 import webbrowser as wb
+from unnamed_exception import *
 
 min_xmake_ver=20000100003L
 
@@ -151,7 +152,7 @@ class MainWin(tk.Frame):
         try:
             tarconf=json.loads(st)
             if not self.origin_config:
-                raise()
+                raise UnnamedException()
         except:
             self.action_common("config")
             return
@@ -211,7 +212,7 @@ class MainWin(tk.Frame):
             process=sp.Popen(["xmake","--version"],stdout=sp.PIPE)
             returncode=process.wait()
             if returncode!=0:
-                raise()
+                raise UnnamedException()
             out=process.stdout.read()
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
@@ -219,7 +220,7 @@ class MainWin(tk.Frame):
             ver=long(''.join(["%05d"%int(x) for x in ver]))
             if ver>=min_xmake_ver:
                 return True
-            raise()
+            raise UnnamedException()
         except:
             return False
 

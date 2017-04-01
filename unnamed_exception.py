@@ -1,0 +1,2 @@
+class UnnamedException(Exception):
+    pass
