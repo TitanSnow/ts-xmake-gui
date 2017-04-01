@@ -18,3 +18,6 @@ in console
 
 ### For windows users
 Just download the exe file from lastest release then run it
+
+## demo
+![demo.gif](docs/demo.gif)
