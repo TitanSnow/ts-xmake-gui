@@ -237,6 +237,7 @@ class MainWin(tk.Frame):
     def toggle_backtrace(self):
         self.option_backtrace=not self.option_backtrace
 
+cte_thread=None
 @error_handle
 def main():
     win=MainWin()
@@ -257,8 +258,15 @@ def main():
     else:
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..OK"
     def clear_tiped_exception():
+        global cte_thread
         tiped_exception=set()
-    Timer(60,clear_tiped_exception).start()
+        cte_thread=Timer(60,clear_tiped_exception)
+        cte_thread.start()
+    clear_tiped_exception()
+    def stop_all():
+        cte_thread.cancel()
+        win.master.quit()
+    win.master.protocol("WM_DELETE_WINDOW",stop_all)
     win.mainloop()
 if __name__=="__main__":
     main()
