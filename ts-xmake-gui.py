@@ -151,14 +151,12 @@ class MainWin(tk.Frame):
         tarconf=None
         try:
             tarconf=json.loads(st)
-            if not self.origin_config:
-                raise UnnamedException()
         except:
             self.action_common("config")
             return
         cfs=[]
         for key,value in tarconf.items():
-            if isinstance(key,str) and isinstance(value,str):
+            if isinstance(key,str) and isinstance(value,str) or isinstance(key,unicode) and isinstance(value,unicode):
                 cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
         self.action_common("config "+''.join(cfs))
 
@@ -199,7 +197,6 @@ class MainWin(tk.Frame):
                 tarconf=configs["_TARGETS"][target]
                 st=json.dumps(tarconf,indent=4,separators=(',',': '))
                 self.configarea.insert(tk.END,st)
-                self.origin_config=tarconf
 
     @error_handle
     def askpath(self,title):
