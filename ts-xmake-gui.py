@@ -264,20 +264,23 @@ class MainWin(tk.Frame):
         self.option_backtrace=not self.option_backtrace
 
 cte_thread=None
+root=None
 @error_handle
 def main():
-    win=MainWin()
-    win.master.title("xmake")
-    menubar=tk.Menu(win.master)
+    global root
+    root=tk.Tk()
+    win=MainWin(root)
+    root.title("xmake")
+    menubar=tk.Menu(root)
     def show_about():
         showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
-    mn_option=tk.Menu(win.master)
+    mn_option=tk.Menu(root)
     mn_option.add_command(label="xmake path",command=win.config_xmake_path)
     mn_option.add_checkbutton(label="verbose",command=win.toggle_verbose)
     mn_option.add_checkbutton(label="backtrace",command=win.toggle_backtrace)
     menubar.add_cascade(label="Option",menu=mn_option)
     menubar.add_command(label="About",command=show_about)
-    win.master.config(menu=menubar)
+    root.config(menu=menubar)
     if not win.test_xmake_path():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
         showerror("Error","xmake not found or version is too low!\n\nIf you're sure you have installed xmake 2.1.3+, please config xmake path manually\nOtherwise, goto github.com/tboox/xmake to get one")
@@ -291,8 +294,8 @@ def main():
     clear_tiped_exception()
     def stop_all():
         cte_thread.cancel()
-        win.master.quit()
-    win.master.protocol("WM_DELETE_WINDOW",stop_all)
+        root.quit()
+    root.protocol("WM_DELETE_WINDOW",stop_all)
     win.mainloop()
 if __name__=="__main__":
     main()
