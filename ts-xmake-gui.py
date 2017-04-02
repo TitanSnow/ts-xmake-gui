@@ -206,7 +206,7 @@ class MainWin(tk.Frame):
     def test_xmake_path(self):
         #return os.system(self.get_xmake_path()+" --version")==0
         try:
-            process=sp.Popen(["xmake","--version"],stdout=sp.PIPE)
+            process=sp.Popen([self.get_xmake_path(),"--version"],stdout=sp.PIPE)
             returncode=process.wait()
             if returncode!=0:
                 raise UnnamedException()
@@ -349,7 +349,7 @@ def main():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t.. "+win.get_xmake_version()
     @error_handle
     def clear_tiped_exception():
-        global cte_thread
+        global cte_thread,tiped_exception
         tiped_exception=set()
         cte_thread=Timer(60,clear_tiped_exception)
         cte_thread.start()

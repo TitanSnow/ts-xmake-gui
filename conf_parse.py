@@ -15,5 +15,5 @@ def loads(st):
             rst.pop()
         if ch=="=" and not inq:
             rst[-1]=":"
-        --non
+        non-=1
     return json.loads(''.join(rst))
