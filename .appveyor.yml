@@ -1,0 +1,22 @@
+version: No.{build}
+skip_tags: false
+skip_non_tags: true
+image: Visual Studio 2013
+clone_depth: 50
+platform: x86
+install:
+  - pip install pyinstaller
+build_script:
+  - pyinstaller -F ts-xmake-gui.py
+artifacts:
+  - path: dist\ts-xmake-gui.exe
+    name: ts-xmake-gui
+deploy:
+  - provider: GitHub
+    artifact: dist\ts-xmake-gui.exe
+    draft: true
+    description: 'temp'
+    on:
+      appveyor_repo_tag: true
+    auth_token:
+      secure: i6fhYJ/A8hJC3+zb+jwRNljh5pGKxhC03D5Gla6EowVBLaFolxA8X3ZeXE0aE0pZ
