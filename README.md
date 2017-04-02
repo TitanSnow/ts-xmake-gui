@@ -7,12 +7,22 @@ An ugly xmake gui
 
 ## require
 
-* [xmake](https://github.com/tboox/xmake) 2.1.3+
+* [xmake](https://github.com/tboox/xmake) 2.1.3+ if on Windows
 * better if have xterm
-* python2
-* python-tk
+* python2 if not on Windows
+* python-tk if not on Windows
 
 ## usage
+### installation
+```console
+$ git clone https://github.com/TitanSnow/ts-xmake-gui.git
+$ cd ts-xmake-gui
+$ git submodule update --init
+$ make build
+$ sudo make install
+```
+
+### run
 in console
 ```
 /path/to/ts-xmake-gui$ ./ts-xmake-gui.py
