@@ -262,6 +262,42 @@ class MainWin(tk.Frame):
     def toggle_backtrace(self):
         self.option_backtrace=not self.option_backtrace
 
+    @error_handle
+    def action_package(self):
+        self.action_common("package")
+
+    @error_handle
+    def action_run(self):
+        self.action_common("run")
+
+    @error_handle
+    def action_global(self):
+        self.action_common("global")
+
+    @error_handle
+    def action_install(self):
+        self.action_common("install")
+
+    @error_handle
+    def action_uninstall(self):
+        self.action_common("uninstall")
+
+    @error_handle
+    def action_create(self):
+        self.action_common("create")
+
+    @error_handle
+    def action_doxygen(self):
+        self.action_common("doxygen")
+
+    @error_handle
+    def action_project(self):
+        self.action_common("project")
+
+    @error_handle
+    def action_hello(self):
+        self.action_common("hello")
+
 cte_thread=None
 root=None
 @error_handle
@@ -276,18 +312,24 @@ def main():
     @error_handle
     def show_help():
         wb.open("https://github.com/TitanSnow/ts-xmake-gui/blob/master/README.md",1,True)
+    @error_handle
+    def stop_all():
+        cte_thread.cancel()
+        root.quit()
     menubar=tk.Menu(root)
     mn_chores=tk.Menu(root)
-    mn_chores.add_command(label="Package")
-    mn_chores.add_command(label="Run")
-    mn_chores.add_command(label="Global")
-    mn_chores.add_command(label="Install")
-    mn_chores.add_command(label="Uninstall")
-    mn_chores.add_command(label="Create")
+    mn_chores.add_command(label="Package",command=win.action_package)
+    mn_chores.add_command(label="Run",command=win.action_run)
+    mn_chores.add_command(label="Global",command=win.action_global)
+    mn_chores.add_command(label="Install",command=win.action_install)
+    mn_chores.add_command(label="Uninstall",command=win.action_uninstall)
+    mn_chores.add_command(label="Create",command=win.action_create)
     mn_chores.add_separator()
-    mn_chores.add_command(label="Doxygen")
-    mn_chores.add_command(label="Project")
-    mn_chores.add_command(label="Hello")
+    mn_chores.add_command(label="Doxygen",command=win.action_doxygen)
+    mn_chores.add_command(label="Project",command=win.action_project)
+    mn_chores.add_command(label="Hello",command=win.action_hello)
+    mn_chores.add_separator()
+    mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
     mn_option.add_command(label="xmake path",command=win.config_xmake_path)
@@ -312,10 +354,6 @@ def main():
         cte_thread=Timer(60,clear_tiped_exception)
         cte_thread.start()
     clear_tiped_exception()
-    @error_handle
-    def stop_all():
-        cte_thread.cancel()
-        root.quit()
     root.protocol("WM_DELETE_WINDOW",stop_all)
     win.mainloop()
 if __name__=="__main__":
