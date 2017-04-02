@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import Tkinter as tk
+import tk
 import tkFileDialog
 import os
 import terminal
