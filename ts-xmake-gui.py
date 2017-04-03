@@ -12,6 +12,7 @@ import subprocess as sp
 import re
 import webbrowser as wb
 from unnamed_exception import *
+from os import path
 
 min_xmake_ver=20000100003L
 
@@ -168,7 +169,7 @@ class MainWin(tk.Frame):
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
-            f=open(".xmake/xmake.conf","r")
+            f=open(path.join(".xmake","xmake.conf"),"r")
             configs=cp.loads(f.read())
             f.close()
             return configs
