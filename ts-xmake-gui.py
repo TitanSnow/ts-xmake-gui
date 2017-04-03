@@ -8,7 +8,6 @@ from shutil import rmtree
 import conf_parse as cp
 import json
 from tkMessageBox import showinfo,showerror
-from threading import Timer
 import subprocess as sp
 import re
 import webbrowser as wb
@@ -298,11 +297,8 @@ class MainWin(tk.Frame):
     def action_hello(self):
         self.action_common("hello")
 
-cte_thread=None
-root=None
 @error_handle
 def main():
-    global root
     root=tk.Tk()
     win=MainWin(root)
     root.title("xmake")
@@ -314,7 +310,6 @@ def main():
         wb.open("https://github.com/TitanSnow/ts-xmake-gui/blob/master/README.md",1,True)
     @error_handle
     def stop_all():
-        cte_thread.cancel()
         root.quit()
     menubar=tk.Menu(root)
     mn_chores=tk.Menu(root)
@@ -349,12 +344,10 @@ def main():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t.. "+win.get_xmake_version()
     @error_handle
     def clear_tiped_exception():
-        global cte_thread,tiped_exception
+        global tiped_exception
         tiped_exception=set()
-        cte_thread=Timer(60,clear_tiped_exception)
-        cte_thread.start()
+        root.after(60000,clear_tiped_exception)
     clear_tiped_exception()
-    root.protocol("WM_DELETE_WINDOW",stop_all)
     win.mainloop()
 if __name__=="__main__":
     main()
