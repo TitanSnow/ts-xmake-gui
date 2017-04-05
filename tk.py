@@ -1,2 +1,2 @@
-from Tkinter import *
-from ttk import Button
+from tkinter import *
+from tkinter.ttk import Button

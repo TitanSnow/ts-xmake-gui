@@ -1,27 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import tk
-import tkFileDialog
+import tkinter.filedialog as tkFileDialog
 import os
 import terminal
 from shutil import rmtree
 import conf_parse as cp
 import json
-from tkMessageBox import showinfo,showerror
+from tkinter.messagebox import showinfo,showerror
 import subprocess as sp
 import re
 import webbrowser as wb
 from unnamed_exception import *
 from os import path
 
-min_xmake_ver=20000100003L
+min_xmake_ver=20000100003
 
 tiped_exception=set()
 def error_handle(func):
     def _func(*args,**kwargs):
         try:
             return func(*args,**kwargs)
-        except Exception,err:
+        except Exception as err:
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
             raise
@@ -170,7 +170,7 @@ class MainWin(tk.Frame):
         try:
             os.chdir(self.projectdir_input_content.get())
             f=open(path.join(".xmake","xmake.conf"),"r")
-            configs=cp.loads(f.read())
+            configs=cp.loads(str(f.read()))
             f.close()
             return configs
         except:
@@ -211,11 +211,11 @@ class MainWin(tk.Frame):
             returncode=process.wait()
             if returncode!=0:
                 raise UnnamedException()
-            out=process.stdout.read()
+            out=str(process.stdout.read())
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
             self.xmake_version='.'.join(ver)
-            ver=long(''.join(["%05d"%int(x) for x in ver]))
+            ver=int(''.join(["%05d"%int(x) for x in ver]))
             if ver>=min_xmake_ver:
                 return True
             raise UnnamedException()
