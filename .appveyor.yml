@@ -5,15 +5,16 @@ image: Visual Studio 2013
 clone_depth: 50
 platform: x86
 install:
-  - pip install pyinstaller
+  - C:\Python34\Scripts\pip install pyinstaller
 build_script:
-  - pyinstaller -F ts-xmake-gui.py
+  - C:\Python34\Scripts\pyinstaller -F ts-xmake-gui.py
+  - ps: Move-Item dist\ts-xmake-gui.exe dist\ts-xmake-gui3.exe
 artifacts:
-  - path: dist\ts-xmake-gui.exe
+  - path: dist\ts-xmake-gui3.exe
     name: ts-xmake-gui
 deploy:
   - provider: GitHub
-    artifact: dist\ts-xmake-gui.exe
+    artifact: dist\ts-xmake-gui3.exe
     draft: true
     description: 'temp'
     on:
