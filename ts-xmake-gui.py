@@ -154,7 +154,7 @@ class MainWin(tk.Frame):
         for child in self.winfo_children():
             try:
                 child.config(state=tk.NORMAL)
-            except TclError,e:
+            except TclError:
                 pass
         self.console.config(state=tk.DISABLED)
 
