@@ -74,7 +74,7 @@ class MainWin(tk.Frame):
         self.label_target=tk.Label(self,text="Target")
         self.label_target.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=0,columnspan=2)
 
-        self.target_list=tk.Listbox(self,width=0)
+        self.target_list=tk.Listbox(self,width=0,height=0)
         self.target_list.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=0,columnspan=2,rowspan=2)
         self.target_list.bind("<ButtonRelease-1>",self.callback_target_list_click)
         self.target_list.bind("<Return>",self.callback_target_list_click)
@@ -88,14 +88,20 @@ class MainWin(tk.Frame):
         self.reconfig=tk.Button(self,text="Config",command=self.action_config)
         self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4,columnspan=2)
 
-        self.configarea=tk.Text(self,width=0)
+        self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
         self.label_status=tk.Label(self,text="Status")
-        self.label_status.grid(sticky=tk.W,row=7,columnspan=6)
+        self.label_status.grid(sticky=tk.W,row=9,columnspan=6)
 
         self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
-        self.label_xmake_path.grid(sticky=tk.W,row=8,columnspan=6)
+        self.label_xmake_path.grid(sticky=tk.W,row=10,columnspan=6)
+
+        self.label_console=tk.Label(self,text="Console")
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+
+        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=10)
+        self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
