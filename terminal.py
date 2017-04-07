@@ -28,7 +28,7 @@ def run_in_async(console,args,callback):
                 if not st:
                     break
                 insert(st)
-        except IOError,e:
+        except IOError:
             pass
         f.close()
         code=os.waitpid(pid,0)[1]
