@@ -114,6 +114,8 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_common(self,action,callback=None):
+        if isinstance(action,str):
+            action=[action]
         os.chdir(self.projectdir_input_content.get())
         target=self.target_list.curselection()
         if not target:
@@ -121,21 +123,39 @@ class MainWin(tk.Frame):
         else:
             target=self.targets[target[0]]
         target="--all" if target=="all" else target
-        target="" if target=="--all" and action[:len("config")]=="config" else target
+        target="" if target=="--all" and action[0][:len("config")]=="config" else target
         args=[]
         if self.option_verbose:
             args.append("--verbose")
         if self.option_backtrace:
             args.append("--backtrace")
-        arglist=[self.get_xmake_path(),action]+args
+        arglist=[self.get_xmake_path()]+action+args
         if target:
             arglist.append(target)
         def reflesh():
+            self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
             if callback:
                 callback()
+        self.disable_all()
         terminal.run_in_async(self.console,arglist,reflesh)
+
+    @error_handle
+    def disable_all(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state=tk.DISABLED)
+            except TclError,e:
+                pass
+
+    @error_handle
+    def enable_all(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state=tk.NORMAL)
+            except TclError,e:
+                pass
 
     @error_handle
     def action_build(self):
@@ -143,7 +163,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_rebuild(self):
-        self.action_common("build -r")
+        self.action_common(["build","-r"])
 
     @error_handle
     def action_clean(self):
@@ -169,8 +189,8 @@ class MainWin(tk.Frame):
         cfs=[]
         for key,value in tarconf.items():
             if isinstance(key,str) and isinstance(value,str) or isinstance(key,unicode) and isinstance(value,unicode):
-                cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
-        self.action_common("config "+''.join(cfs))
+                cfs.append("--%s=%s"%(key,value))
+        self.action_common(["config"]+cfs)
 
     @error_handle
     def action_reload_conf(self):
