@@ -14,7 +14,7 @@ An ugly xmake gui
 ## usage
 ### installation
 ```console
-$ git clone https://github.com/TitanSnow/ts-xmake-gui.git
+$ git clone -b posix https://github.com/TitanSnow/ts-xmake-gui.git
 $ cd ts-xmake-gui
 $ git submodule update --init
 $ make build
