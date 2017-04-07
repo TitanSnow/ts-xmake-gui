@@ -226,7 +226,7 @@ class MainWin(tk.Frame):
     def get_xmake_version(self):
         try:
             return self.xmake_version
-        except:
+        except AttributeError:
             self.test_xmake_path()
             return self.xmake_version
 
@@ -243,7 +243,7 @@ class MainWin(tk.Frame):
     def get_xmake_path(self):
         try:
             return self.xmake_path
-        except:
+        except AttributeError:
             return "xmake"
 
     @error_handle
