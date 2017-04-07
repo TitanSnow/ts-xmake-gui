@@ -2,10 +2,11 @@ import pty
 import os
 import tk
 from threading import Thread
+from terminal_string import delete_color
 def run_in_async(console,args,callback):
     def insert(st):
         console.config(state=tk.NORMAL)
-        console.insert(tk.END,st)
+        console.insert(tk.END,delete_color(st))
         console.see(tk.END)
         console.config(state=tk.DISABLED)
     console.config(state=tk.NORMAL)
