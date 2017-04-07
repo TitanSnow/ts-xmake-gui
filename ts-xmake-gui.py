@@ -156,6 +156,7 @@ class MainWin(tk.Frame):
                 child.config(state=tk.NORMAL)
             except TclError,e:
                 pass
+        self.console.config(state=tk.DISABLED)
 
     @error_handle
     def action_build(self):
