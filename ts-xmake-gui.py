@@ -113,25 +113,29 @@ class MainWin(tk.Frame):
         self.reflesh_configarea()
 
     @error_handle
-    def action_common(self,action):
+    def action_common(self,action,callback=None):
         os.chdir(self.projectdir_input_content.get())
         target=self.target_list.curselection()
         if not target:
             target=""
         else:
             target=self.targets[target[0]]
-        target="--all" if target=="all" else "'"+target.replace("'","\\'")+"'"
+        target="--all" if target=="all" else target
         target="" if target=="--all" and action[:len("config")]=="config" else target
-        target="" if target=="''" else target
         args=[]
         if self.option_verbose:
             args.append("--verbose")
         if self.option_backtrace:
             args.append("--backtrace")
-        args=' '.join(args)
-        terminal.run_keep_window(self.get_xmake_path()+" "+action+" "+args+" "+target)
-        self.reflesh_target_list()
-        self.reflesh_configarea()
+        arglist=[self.get_xmake_path(),action]+args
+        if target:
+            arglist.append(target)
+        def reflesh():
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+            if callback:
+                callback()
+        terminal.run_in_async(self.console,arglist,reflesh)
 
     @error_handle
     def action_build(self):
@@ -147,10 +151,11 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_distclean(self):
-        self.action_common("clean")
-        rmtree(".xmake")
-        self.reflesh_target_list()
-        self.reflesh_configarea()
+        def cb():
+            rmtree(".xmake")
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+        self.action_common("clean",cb)
 
     @error_handle
     def action_config(self):
