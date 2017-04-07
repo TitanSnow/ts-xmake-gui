@@ -56,8 +56,8 @@ class MainWin(tk.Frame):
         self.label_action=tk.Label(self,text="Action")
         self.label_action.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=2,column=0,columnspan=6)
 
-        self.config=tk.Button(self,text="Config",command=self.action_config,width=10)
-        self.config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
+        self.btnconfig=tk.Button(self,text="Config",command=self.action_config,width=10)
+        self.btnconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
 
         self.build=tk.Button(self,text="Build",command=self.action_build,width=20)
         self.build.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=1,columnspan=2)
