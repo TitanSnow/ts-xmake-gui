@@ -3,6 +3,11 @@ import os
 import tk
 from threading import Thread
 def run_in_async(console,args,callback):
+    def insert(st):
+        console.config(state=tk.NORMAL)
+        console.insert(tk.END,st)
+        console.see(tk.END)
+        console.config(state=tk.DISABLED)
     console.config(state=tk.NORMAL)
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)
@@ -21,15 +26,11 @@ def run_in_async(console,args,callback):
                 st=f.readline()
                 if not st:
                     break
-                console.config(state=tk.NORMAL)
-                console.insert(tk.END,st)
-                console.config(state=tk.DISABLED)
+                insert(st)
         except IOError,e:
             pass
         f.close()
         code=os.waitpid(pid,0)[1]
-        console.config(state=tk.NORMAL)
-        console.insert(tk.END,"Exitcode: %d\n"%code)
-        console.config(state=tk.DISABLED)
+        insert("Exitcode: %d\n"%code)
         callback()
     Thread(target=wait).start()
