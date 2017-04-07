@@ -152,7 +152,7 @@ class MainWin(tk.Frame):
         tarconf=None
         try:
             tarconf=json.loads(st)
-        except:
+        except ValueError:
             self.action_common("config")
             return
         cfs=[]
