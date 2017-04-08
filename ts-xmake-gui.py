@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import tk
-import tkFileDialog
+from tkFileDialog import askdirectory,askopenfilename
 import os
 import terminal
 from shutil import rmtree
@@ -102,7 +102,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_browse_projectdir(self):
-        self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
+        self.projectdir_input_content.set(askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -201,7 +201,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def askpath(self,title):
-        return tkFileDialog.askopenfilename(parent=self,title=title)
+        return askopenfilename(parent=self,title=title)
 
     @error_handle
     def test_xmake_path(self):
