@@ -25,9 +25,6 @@ def error_handle(func):
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
             raise
-        except:
-            showerror("Internal Exception","Sorry, there is an unknown internal exception happened"+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
-            raise
     return _func
 
 class MainWin(tk.Frame):
