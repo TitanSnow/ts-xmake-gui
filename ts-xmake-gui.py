@@ -97,7 +97,7 @@ class MainWin(tk.Frame):
         self.label_console=tk.Label(self,text="Console")
         self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
 
-        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=10)
+        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.bind("<<insert>>",self.console_insert)
