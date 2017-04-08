@@ -21,7 +21,7 @@ def error_handle(func):
     def _func(*args,**kwargs):
         try:
             return func(*args,**kwargs)
-        except Exception,err:
+        except Exception as err:
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
             raise
