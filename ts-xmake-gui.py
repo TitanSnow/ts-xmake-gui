@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import tk
-import tkFileDialog
+from tkFileDialog import askdirectory,askopenfilename
 import os
 import terminal
 from shutil import rmtree
@@ -21,12 +21,9 @@ def error_handle(func):
     def _func(*args,**kwargs):
         try:
             return func(*args,**kwargs)
-        except Exception,err:
+        except Exception as err:
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
-            raise
-        except:
-            showerror("Internal Exception","Sorry, there is an unknown internal exception happened"+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             raise
     return _func
 
@@ -108,7 +105,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_browse_projectdir(self):
-        self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
+        self.projectdir_input_content.set(askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -201,11 +198,10 @@ class MainWin(tk.Frame):
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
-            f=open(path.join(".xmake","xmake.conf"),"r")
-            configs=cp.loads(f.read())
-            f.close()
+            with open(path.join(".xmake","xmake.conf"),"r") as f:
+                configs=cp.loads(f.read())
             return configs
-        except:
+        except (OSError,IOError,ValueError):
             return
 
     @error_handle
@@ -233,17 +229,12 @@ class MainWin(tk.Frame):
 
     @error_handle
     def askpath(self,title):
-        return tkFileDialog.askopenfilename(parent=self,title=title)
+        return askopenfilename(parent=self,title=title)
 
     @error_handle
     def test_xmake_path(self):
-        #return os.system(self.get_xmake_path()+" --version")==0
         try:
-            process=sp.Popen([self.get_xmake_path(),"--version"],stdout=sp.PIPE)
-            returncode=process.wait()
-            if returncode!=0:
-                raise UnnamedException()
-            out=process.stdout.read()
+            out=sp.check_output([self.get_xmake_path(),"--version"])
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
             self.xmake_version='.'.join(ver)
@@ -251,7 +242,7 @@ class MainWin(tk.Frame):
             if ver>=min_xmake_ver:
                 return True
             raise UnnamedException()
-        except:
+        except (OSError,sp.CalledProcessError,AttributeError,UnnamedException):
             return False
 
     @error_handle
