@@ -5,10 +5,8 @@ from threading import Thread
 from terminal_string import delete_color
 def run_in_async(console,args,callback):
     def insert(st):
-        console.config(state=tk.NORMAL)
-        console.insert(tk.END,delete_color(st))
-        console.see(tk.END)
-        console.config(state=tk.DISABLED)
+        console.insert_queue.append(delete_color(st))
+        console.event_generate("<<insert>>",when="tail")
     console.config(state=tk.NORMAL)
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)

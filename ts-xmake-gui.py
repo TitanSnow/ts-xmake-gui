@@ -99,6 +99,8 @@ class MainWin(tk.Frame):
 
         self.console=tk.Text(self,state=tk.DISABLED,width=0,height=10)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
+        self.console.insert_queue=[]
+        self.console.bind("<<insert>>",self.console_insert)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -321,6 +323,16 @@ class MainWin(tk.Frame):
     @error_handle
     def action_hello(self):
         self.action_common("hello")
+
+    @error_handle
+    def console_insert(self,e):
+        console=self.console
+        console.config(state=tk.NORMAL)
+        while console.insert_queue:
+            st=console.insert_queue.pop(0)
+            console.insert(tk.END,st)
+        console.see(tk.END)
+        console.config(state=tk.DISABLED)
 
 @error_handle
 def main():
