@@ -204,13 +204,8 @@ class MainWin(tk.Frame):
 
     @error_handle
     def test_xmake_path(self):
-        #return os.system(self.get_xmake_path()+" --version")==0
         try:
-            process=sp.Popen([self.get_xmake_path(),"--version"],stdout=sp.PIPE)
-            returncode=process.wait()
-            if returncode!=0:
-                raise UnnamedException()
-            out=process.stdout.read()
+            out=sp.check_output([self.get_xmake_path(),"--version"])
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
             self.xmake_version='.'.join(ver)
@@ -218,7 +213,7 @@ class MainWin(tk.Frame):
             if ver>=min_xmake_ver:
                 return True
             raise UnnamedException()
-        except:
+        except (OSError,sp.CalledProcessError,AttributeError,UnnamedException):
             return False
 
     @error_handle
