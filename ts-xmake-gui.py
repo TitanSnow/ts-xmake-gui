@@ -169,11 +169,10 @@ class MainWin(tk.Frame):
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
-            f=open(path.join(".xmake","xmake.conf"),"r")
-            configs=cp.loads(f.read())
-            f.close()
+            with open(path.join(".xmake","xmake.conf"),"r") as f:
+                configs=cp.loads(f.read())
             return configs
-        except:
+        except (OSError,IOError,ValueError):
             return
 
     @error_handle
