@@ -145,7 +145,7 @@ class MainWin(tk.Frame):
         for child in self.winfo_children():
             try:
                 child.config(state=tk.DISABLED)
-            except TclError:
+            except tk.TclError:
                 pass
 
     @error_handle
@@ -153,7 +153,7 @@ class MainWin(tk.Frame):
         for child in self.winfo_children():
             try:
                 child.config(state=tk.NORMAL)
-            except TclError:
+            except tk.TclError:
                 pass
         self.console.config(state=tk.DISABLED)
 
