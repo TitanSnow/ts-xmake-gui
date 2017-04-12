@@ -1,6 +1,9 @@
 version: No.{build}
 skip_tags: false
 skip_non_tags: true
+branches:
+  except:
+    - posix
 image: Visual Studio 2013
 clone_depth: 50
 platform: x86

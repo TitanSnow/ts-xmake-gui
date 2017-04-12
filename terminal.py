@@ -1,4 +1,5 @@
+from unnamed_exception import *
 try:
     from xterm import *
-except:
+except (UnnamedException,OSError):
     from curshell import *

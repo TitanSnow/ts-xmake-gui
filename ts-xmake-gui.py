@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import tk
-import tkinter.filedialog as tkFileDialog
+from tkinter.filedialog import askdirectory,askopenfilename
 import os
 import terminal
 from shutil import rmtree
@@ -24,9 +24,6 @@ def error_handle(func):
         except Exception as err:
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
-            raise
-        except:
-            showerror("Internal Exception","Sorry, there is an unknown internal exception happened"+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             raise
     return _func
 
@@ -56,8 +53,8 @@ class MainWin(tk.Frame):
         self.label_action=tk.Label(self,text="Action")
         self.label_action.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=2,column=0,columnspan=6)
 
-        self.config=tk.Button(self,text="Config",command=self.action_config,width=10)
-        self.config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
+        self.btnconfig=tk.Button(self,text="Config",command=self.action_config,width=10)
+        self.btnconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
 
         self.build=tk.Button(self,text="Build",command=self.action_build,width=20)
         self.build.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=1,columnspan=2)
@@ -102,7 +99,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_browse_projectdir(self):
-        self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
+        self.projectdir_input_content.set(askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
         self.reflesh_configarea()
 
@@ -152,7 +149,7 @@ class MainWin(tk.Frame):
         tarconf=None
         try:
             tarconf=json.loads(st)
-        except:
+        except ValueError:
             self.action_common("config")
             return
         cfs=[]
@@ -169,11 +166,10 @@ class MainWin(tk.Frame):
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
-            f=open(path.join(".xmake","xmake.conf"),"r")
-            configs=cp.loads(str(f.read()))
-            f.close()
+            with open(path.join(".xmake","xmake.conf"),"r") as f:
+                configs=cp.loads(str(f.read()))
             return configs
-        except:
+        except (OSError,IOError,ValueError):
             return
 
     @error_handle
@@ -201,17 +197,12 @@ class MainWin(tk.Frame):
 
     @error_handle
     def askpath(self,title):
-        return tkFileDialog.askopenfilename(parent=self,title=title)
+        return askopenfilename(parent=self,title=title)
 
     @error_handle
     def test_xmake_path(self):
-        #return os.system(self.get_xmake_path()+" --version")==0
         try:
-            process=sp.Popen([self.get_xmake_path(),"--version"],stdout=sp.PIPE)
-            returncode=process.wait()
-            if returncode!=0:
-                raise UnnamedException()
-            out=str(process.stdout.read())
+            out=str(sp.check_output([self.get_xmake_path(),"--version"]))
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
             self.xmake_version='.'.join(ver)
@@ -219,14 +210,14 @@ class MainWin(tk.Frame):
             if ver>=min_xmake_ver:
                 return True
             raise UnnamedException()
-        except:
+        except (OSError,sp.CalledProcessError,AttributeError,UnnamedException):
             return False
 
     @error_handle
     def get_xmake_version(self):
         try:
             return self.xmake_version
-        except:
+        except AttributeError:
             self.test_xmake_path()
             return self.xmake_version
 
@@ -243,7 +234,7 @@ class MainWin(tk.Frame):
     def get_xmake_path(self):
         try:
             return self.xmake_path
-        except:
+        except AttributeError:
             return "xmake"
 
     @error_handle
