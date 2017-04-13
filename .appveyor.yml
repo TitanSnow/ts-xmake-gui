@@ -2,15 +2,16 @@ version: No.{build}
 skip_tags: false
 skip_non_tags: true
 branches:
-  except:
-    - posix
-image: Visual Studio 2013
+  only:
+    - nt
 clone_depth: 50
 platform: x86
 install:
   - pip install pyinstaller
+before_build:
+  - ps: Move-Item ts-xmake-gui.pyw ts-xmake-gui.py
 build_script:
-  - pyinstaller -F ts-xmake-gui.py
+  - pyinstaller -F -w ts-xmake-gui.py
 artifacts:
   - path: dist\ts-xmake-gui.exe
     name: ts-xmake-gui
