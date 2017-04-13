@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import tk
-import tkFileDialog
+from tkFileDialog import askdirectory,askopenfilename
 import os
 import terminal
 from shutil import rmtree
@@ -21,12 +21,9 @@ def error_handle(func):
     def _func(*args,**kwargs):
         try:
             return func(*args,**kwargs)
-        except Exception,err:
+        except Exception as err:
             if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             tiped_exception.add(err)
-            raise
-        except:
-            showerror("Internal Exception","Sorry, there is an unknown internal exception happened"+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
             raise
     return _func
 
@@ -56,8 +53,8 @@ class MainWin(tk.Frame):
         self.label_action=tk.Label(self,text="Action")
         self.label_action.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=2,column=0,columnspan=6)
 
-        self.config=tk.Button(self,text="Config",command=self.action_config,width=10)
-        self.config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
+        self.btnconfig=tk.Button(self,text="Config",command=self.action_config,width=10)
+        self.btnconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=0)
 
         self.build=tk.Button(self,text="Build",command=self.action_build,width=20)
         self.build.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=3,column=1,columnspan=2)
@@ -74,7 +71,7 @@ class MainWin(tk.Frame):
         self.label_target=tk.Label(self,text="Target")
         self.label_target.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=0,columnspan=2)
 
-        self.target_list=tk.Listbox(self,width=0)
+        self.target_list=tk.Listbox(self,width=0,height=0)
         self.target_list.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=0,columnspan=2,rowspan=2)
         self.target_list.bind("<ButtonRelease-1>",self.callback_target_list_click)
         self.target_list.bind("<Return>",self.callback_target_list_click)
@@ -88,44 +85,77 @@ class MainWin(tk.Frame):
         self.reconfig=tk.Button(self,text="Config",command=self.action_config)
         self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4,columnspan=2)
 
-        self.configarea=tk.Text(self,width=0)
+        self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
         self.label_status=tk.Label(self,text="Status")
-        self.label_status.grid(sticky=tk.W,row=7,columnspan=6)
+        self.label_status.grid(sticky=tk.W,row=9,columnspan=6)
 
         self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
-        self.label_xmake_path.grid(sticky=tk.W,row=8,columnspan=6)
+        self.label_xmake_path.grid(sticky=tk.W,row=10,columnspan=6)
+
+        self.label_console=tk.Label(self,text="Console")
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+
+        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
+        self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
+        self.console.insert_queue=[]
+        self.console.bind("<<insert>>",self.console_insert)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
 
     @error_handle
     def action_browse_projectdir(self):
-        self.projectdir_input_content.set(tkFileDialog.askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
+        self.projectdir_input_content.set(askdirectory(parent=self,initialdir=self.projectdir_input_content.get(),title="Browse Project Dir"))
         self.reflesh_target_list()
         self.reflesh_configarea()
 
     @error_handle
-    def action_common(self,action):
+    def action_common(self,action,callback=None):
+        if isinstance(action,str):
+            action=[action]
         os.chdir(self.projectdir_input_content.get())
         target=self.target_list.curselection()
         if not target:
             target=""
         else:
             target=self.targets[target[0]]
-        target="--all" if target=="all" else "'"+target.replace("'","\\'")+"'"
-        target="" if target=="--all" and action[:len("config")]=="config" else target
-        target="" if target=="''" else target
+        target="--all" if target=="all" else target
+        target="" if target=="--all" and action[0][:len("config")]=="config" else target
         args=[]
         if self.option_verbose:
             args.append("--verbose")
         if self.option_backtrace:
             args.append("--backtrace")
-        args=' '.join(args)
-        terminal.run_keep_window(self.get_xmake_path()+" "+action+" "+args+" "+target)
-        self.reflesh_target_list()
-        self.reflesh_configarea()
+        arglist=[self.get_xmake_path()]+action+args
+        if target:
+            arglist.append(target)
+        def reflesh():
+            self.enable_all()
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+            if callback:
+                callback()
+        self.disable_all()
+        terminal.run_in_async(self.console,arglist,reflesh)
+
+    @error_handle
+    def disable_all(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state=tk.DISABLED)
+            except TclError:
+                pass
+
+    @error_handle
+    def enable_all(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state=tk.NORMAL)
+            except TclError:
+                pass
+        self.console.config(state=tk.DISABLED)
 
     @error_handle
     def action_build(self):
@@ -133,7 +163,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_rebuild(self):
-        self.action_common("build -r")
+        self.action_common(["build","-r"])
 
     @error_handle
     def action_clean(self):
@@ -141,10 +171,11 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_distclean(self):
-        self.action_common("clean")
-        rmtree(".xmake")
-        self.reflesh_target_list()
-        self.reflesh_configarea()
+        def cb():
+            rmtree(".xmake")
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+        self.action_common("clean",cb)
 
     @error_handle
     def action_config(self):
@@ -152,14 +183,14 @@ class MainWin(tk.Frame):
         tarconf=None
         try:
             tarconf=json.loads(st)
-        except:
+        except ValueError:
             self.action_common("config")
             return
         cfs=[]
         for key,value in tarconf.items():
             if isinstance(key,str) and isinstance(value,str) or isinstance(key,unicode) and isinstance(value,unicode):
-                cfs.append(" '--%s=%s'"%(key.replace("'","\\'"),value.replace("'","\\'")))
-        self.action_common("config "+''.join(cfs))
+                cfs.append("--%s=%s"%(key,value))
+        self.action_common(["config"]+cfs)
 
     @error_handle
     def action_reload_conf(self):
@@ -169,11 +200,10 @@ class MainWin(tk.Frame):
     def read_conf(self):
         try:
             os.chdir(self.projectdir_input_content.get())
-            f=open(path.join(".xmake","xmake.conf"),"r")
-            configs=cp.loads(f.read())
-            f.close()
+            with open(path.join(".xmake","xmake.conf"),"r") as f:
+                configs=cp.loads(f.read())
             return configs
-        except:
+        except (OSError,IOError,ValueError):
             return
 
     @error_handle
@@ -201,17 +231,12 @@ class MainWin(tk.Frame):
 
     @error_handle
     def askpath(self,title):
-        return tkFileDialog.askopenfilename(parent=self,title=title)
+        return askopenfilename(parent=self,title=title)
 
     @error_handle
     def test_xmake_path(self):
-        #return os.system(self.get_xmake_path()+" --version")==0
         try:
-            process=sp.Popen([self.get_xmake_path(),"--version"],stdout=sp.PIPE)
-            returncode=process.wait()
-            if returncode!=0:
-                raise UnnamedException()
-            out=process.stdout.read()
+            out=sp.check_output([self.get_xmake_path(),"--version"])
             rst=re.search(r'(\d+)\.(\d+)\.(\d+)',out)
             ver=rst.groups()
             self.xmake_version='.'.join(ver)
@@ -219,14 +244,14 @@ class MainWin(tk.Frame):
             if ver>=min_xmake_ver:
                 return True
             raise UnnamedException()
-        except:
+        except (OSError,sp.CalledProcessError,AttributeError,UnnamedException):
             return False
 
     @error_handle
     def get_xmake_version(self):
         try:
             return self.xmake_version
-        except:
+        except AttributeError:
             self.test_xmake_path()
             return self.xmake_version
 
@@ -243,7 +268,7 @@ class MainWin(tk.Frame):
     def get_xmake_path(self):
         try:
             return self.xmake_path
-        except:
+        except AttributeError:
             return "xmake"
 
     @error_handle
@@ -298,6 +323,16 @@ class MainWin(tk.Frame):
     @error_handle
     def action_hello(self):
         self.action_common("hello")
+
+    @error_handle
+    def console_insert(self,e):
+        console=self.console
+        console.config(state=tk.NORMAL)
+        while console.insert_queue:
+            st=console.insert_queue.pop(0)
+            console.insert(tk.END,st)
+        console.see(tk.END)
+        console.config(state=tk.DISABLED)
 
 @error_handle
 def main():
