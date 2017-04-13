@@ -89,18 +89,10 @@ class MainWin(tk.Frame):
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
         self.label_status=tk.Label(self,text="Status")
-        self.label_status.grid(sticky=tk.W,row=9,columnspan=6)
+        self.label_status.grid(sticky=tk.W,row=7,columnspan=6)
 
         self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
-        self.label_xmake_path.grid(sticky=tk.W,row=10,columnspan=6)
-
-        self.label_console=tk.Label(self,text="Console")
-        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
-
-        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
-        self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
-        self.console.insert_queue=[]
-        self.console.bind("<<insert>>",self.console_insert)
+        self.label_xmake_path.grid(sticky=tk.W,row=8,columnspan=6)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -132,30 +124,12 @@ class MainWin(tk.Frame):
         if target:
             arglist.append(target)
         def reflesh():
-            self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
             if callback:
                 callback()
-        self.disable_all()
-        terminal.run_in_async(self.console,arglist,reflesh)
-
-    @error_handle
-    def disable_all(self):
-        for child in self.winfo_children():
-            try:
-                child.config(state=tk.DISABLED)
-            except tk.TclError:
-                pass
-
-    @error_handle
-    def enable_all(self):
-        for child in self.winfo_children():
-            try:
-                child.config(state=tk.NORMAL)
-            except tk.TclError:
-                pass
-        self.console.config(state=tk.DISABLED)
+        terminal.run_out_sync(arglist)
+        reflesh()
 
     @error_handle
     def action_build(self):
@@ -323,16 +297,6 @@ class MainWin(tk.Frame):
     @error_handle
     def action_hello(self):
         self.action_common("hello")
-
-    @error_handle
-    def console_insert(self,e):
-        console=self.console
-        console.config(state=tk.NORMAL)
-        while console.insert_queue:
-            st=console.insert_queue.pop(0)
-            console.insert(tk.END,st)
-        console.see(tk.END)
-        console.config(state=tk.DISABLED)
 
 @error_handle
 def main():
