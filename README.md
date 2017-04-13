@@ -7,17 +7,14 @@ An ugly xmake gui :beer:
 
 ## branches
 
-* dev branches
-    * *legacy* (not recommended)
-    * *posix* (for posix users, recommended)
-    * *nt* (for Windows users, recommended)
-    * *3* (the python3 version of branch legacy)
-    * *4* (the python3 version of branch posix)
-* release branches
-    * *r1f1* (release 1f1, from branch legacy)
-    * *r2* (release 2, from branch posix)
+* *legacy* (not recommended)
+* *posix* (for posix users, recommended)
+* *nt* (for Windows users, recommended)
+* *3* (the python3 version of branch legacy)
+* *4* (the python3 version of branch posix)
+* *release* (releases)
 
-<sub>the reason why release branches exist is that dev branches usually have xmake bundled that hasn't released yet, so releases degrade it</sub>
+<sub>the reason why branch release exists is that dev branches usually have xmake bundled that hasn't released yet, so release degrades it</sub>
 
 ## require
 python with tkinter is required
