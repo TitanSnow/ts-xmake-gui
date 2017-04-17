@@ -19,12 +19,19 @@ build_script:
   - ps: Copy-Item winpty.dll,capture_output.dll,winpty-agent.exe ..\..
   - cmd: cd ..\..
   - ps: Remove-Item -Recurse -Force capture_output
+after_build:
+  - ps: Remove-Item -Recurse -Force .git
+  - cmd: cd ..
+  - cmd: mkdir temp
+  - ps: Move-Item ts-xmake-gui temp
+  - ps: Move-Item temp ts-xmake-gui
+  - cmd: cd ts-xmake-gui
 artifacts:
-  - path: .
+  - path: ts-xmake-gui
     name: ts-xmake-gui-newnt
 deploy:
   - provider: GitHub
-    artifact: .
+    artifact: ts-xmake-gui
     draft: true
     description: 'temp'
     on:
