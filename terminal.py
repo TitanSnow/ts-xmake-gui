@@ -1,25 +1,17 @@
-import pty
-import os
 import tk
+from argsToCommandLine import argsToCommandLine
+from capture_output_wrapper import capture_output
 from threading import Thread
-from terminal_string import delete_color
 def run_in_async(console,args,callback):
     def insert(st):
-        console.insert_queue.append(delete_color(st))
+        console.insert_queue.append(st)
         console.event_generate("<<insert>>",when="tail")
     console.config(state=tk.NORMAL)
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)
-    pid,fd=pty.fork()
-    if pid==0:
-        dn=os.open(os.devnull,0)
-        if dn!=0:
-            os.dup2(dn,0)
-            os.close(dn)
-        os.execvp(args[0],args)
-        exit(127)
+    conout=capture_output(None,argsToCommandLine(args),None,None)
     def wait():
-        f=os.fdopen(fd,"r")
+        f=open(conout,"r")
         try:
             while True:
                 st=f.readline()
@@ -29,7 +21,5 @@ def run_in_async(console,args,callback):
         except IOError:
             pass
         f.close()
-        code=os.waitpid(pid,0)[1]
-        insert("Exitcode: %d\n"%code)
         callback()
     Thread(target=wait).start()
