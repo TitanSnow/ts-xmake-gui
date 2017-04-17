@@ -1,5 +1,6 @@
 add_subdirs(path.join("winpty","src"))
 target("capture_output")
+    add_defines("COMPILING_WINPTY_DLL")
     set_kind("shared")
     add_includedirs("$(buildir)")
     add_linkdirs("$(buildir)")
