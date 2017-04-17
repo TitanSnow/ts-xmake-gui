@@ -7,7 +7,7 @@ clone_depth: 50
 platform: x86
 install:
   - cmd: git submodule update --init
-  - ps: Remove-Item -Recurse bundle-xmake-src
+  - ps: Remove-Item -Recurse -Force bundle-xmake-src
   - ps: Invoke-WebRequest "https://github.com/tboox/xmake/releases/download/v2.1.3/xmake-v2.1.3.exe" -OutFile "xmake-installer.exe"
   - cmd: xmake-installer.exe /S /D=C:\xmake
   - cmd: PATH=%PATH%;C:\xmake
@@ -18,7 +18,7 @@ build_script:
   - cmd: cd build
   - ps: Copy-Item winpty.dll capture_output.dll winpty-agent.exe ..\..
   - cmd: cd ..\..
-  - ps: Remove-Item -Recurse capture_output
+  - ps: Remove-Item -Recurse -Force capture_output
 artifacts:
   - path: .
     name: ts-xmake-gui-newnt
