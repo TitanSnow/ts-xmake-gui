@@ -16,7 +16,7 @@ build_script:
   - cmd: cd capture_output
   - cmd: xmake -v
   - cmd: cd build
-  - ps: Copy-Item winpty.dll capture_output.dll winpty-agent.exe ..\..
+  - ps: Copy-Item winpty.dll,capture_output.dll,winpty-agent.exe ..\..
   - cmd: cd ..\..
   - ps: Remove-Item -Recurse -Force capture_output
 artifacts:
