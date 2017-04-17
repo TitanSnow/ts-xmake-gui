@@ -1,3 +1,4 @@
+from unnamed_exception import UnnamedException
 from ctypes import CDLL,c_wchar_p
 libcapture_output=CDLL("capture_output")
 def capture_output(appname,cmdline,cwd,env):
@@ -9,4 +10,7 @@ def capture_output(appname,cmdline,cwd,env):
         cwd=c_wchar_p(unicode(cwd))
     if env!=None:
         env=c_wchar_p(unicode(env))
-    return libcapture_output.capture_output(appname,cmdline,cwd,env)
+    conout=libcapture_output.capture_output(appname,cmdline,cwd,env)
+    if conout:
+        return str(c_wchar_p(conout).value)
+    raise UnnamedException("capture_output error")
