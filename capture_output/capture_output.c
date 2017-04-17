@@ -9,7 +9,7 @@ WINPTY_API LPCWSTR capture_output(
     winpty_t *pty;
     winpty_spawn_config_t *spawn_config;
     BOOL suc;
-    if(!(config=winpty_config_new(0,0))) return 0;
+    if(!(config=winpty_config_new(WINPTY_FLAG_PLAIN_OUTPUT,0))) return 0;
     pty=winpty_open(config,0);
     winpty_config_free(config);
     if(!pty) return 0;
