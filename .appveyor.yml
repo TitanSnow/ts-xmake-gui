@@ -1,23 +1,30 @@
 version: No.{build}
 skip_tags: false
-skip_non_tags: true
 branches:
   only:
-    - nt
+    - newnt
 clone_depth: 50
 platform: x86
 install:
-  - pip install pyinstaller
-before_build:
-  - ps: Move-Item ts-xmake-gui.pyw ts-xmake-gui.py
+  - cmd: git submodule update --init
+  - ps: Remove-Item -Recurse bundle-xmake-src
+  - ps: Invoke-WebRequest "https://github.com/tboox/xmake/releases/download/v2.1.3/xmake-v2.1.3.exe" -OutFile "xmake-installer.exe"
+  - cmd: xmake-installer.exe /S /D=C:\xmake
+  - cmd: PATH=%PATH%;C:\xmake
+  - ps: Remove-Item xmake-installer.exe
 build_script:
-  - pyinstaller -F -w ts-xmake-gui.py
+  - cmd: cd capture_output
+  - cmd: xmake -v
+  - cmd: cd build
+  - ps: Copy-Item winpty.dll capture_output.dll winpty-agent.exe ..\..
+  - cmd: cd ..\..
+  - ps: Remove-Item -Recurse capture_output
 artifacts:
-  - path: dist\ts-xmake-gui.exe
-    name: ts-xmake-gui
+  - path: .
+    name: ts-xmake-gui-newnt
 deploy:
   - provider: GitHub
-    artifact: dist\ts-xmake-gui.exe
+    artifact: .
     draft: true
     description: 'temp'
     on:
