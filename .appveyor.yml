@@ -40,7 +40,7 @@ artifacts:
     name: ts-xmake-gui-newnt-bundle
 deploy:
   - provider: GitHub
-    artifact: ts-xmake-gui,ts-xmake-gui-newnt-bundle
+    artifact: ts-xmake-gui-newnt,ts-xmake-gui-newnt-bundle
     draft: true
     description: 'temp'
     on:
