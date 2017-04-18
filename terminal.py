@@ -40,3 +40,4 @@ def run_in_async(console,args,callback):
         insert("Exitcode: %d\n"%code)
         callback()
     Thread(target=wait).start()
+    return fd
