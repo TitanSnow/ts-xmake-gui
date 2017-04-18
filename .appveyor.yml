@@ -12,6 +12,7 @@ install:
   - cmd: xmake-installer.exe /S /D=C:\xmake
   - cmd: PATH=%PATH%;C:\xmake
   - ps: Remove-Item xmake-installer.exe
+  - cmd: pip install pyinstaller
 build_script:
   - cmd: cd capture_output
   - cmd: xmake -v
@@ -26,12 +27,20 @@ after_build:
   - ps: Move-Item ts-xmake-gui temp
   - ps: Move-Item temp ts-xmake-gui
   - cmd: cd ts-xmake-gui
+  - ps: Copy-Item -Recurse ts-xmake-gui ts-xmake-gui-installer
+  - cmd: cd ts-xmake-gui-installer
+  - cmd: pyinstaller -w ts-xmake-gui.py
+  - ps: Copy-Item -Force winpty.dll,capture_output.dll,winpty-agent.exe dist\ts-xmake-gui
+  - cmd: cd ..
+  - ps: Move-Item ts-xmake-gui-installer\dist\ts-xmake-gui ts-xmake-gui-newnt-bundle
 artifacts:
   - path: ts-xmake-gui
     name: ts-xmake-gui-newnt
+  - path: ts-xmake-gui-newnt-bundle
+    name: ts-xmake-gui-newnt-bundle
 deploy:
   - provider: GitHub
-    artifact: ts-xmake-gui
+    artifact: ts-xmake-gui,ts-xmake-gui-newnt-bundle
     draft: true
     description: 'temp'
     on:
