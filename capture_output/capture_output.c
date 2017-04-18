@@ -1,5 +1,5 @@
 #include "winpty.h"
-WINPTY_API LPCWSTR capture_output(
+WINPTY_API void* capture_output(
     LPCWSTR appname /*OPTIONAL*/,
     LPCWSTR cmdline /*OPTIONAL*/,
     LPCWSTR cwd /*OPTIONAL*/,
@@ -24,5 +24,11 @@ WINPTY_API LPCWSTR capture_output(
         winpty_free(pty);
         return 0;
     }
-    return winpty_conout_name(pty);
+    return pty;
+}
+WINPTY_API LPCWSTR get_conout_name(void* pty){
+    return winpty_conout_name((winpty_t*)pty);
+}
+WINPTY_API LPCWSTR get_conin_name(void* pty){
+    return winpty_conin_name((winpty_t*)pty);
 }

@@ -9,7 +9,7 @@ def run_in_async(console,args,callback):
     console.config(state=tk.NORMAL)
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)
-    conout=capture_output(None,argsToCommandLine(args),None,None)
+    pty,conin,conout=capture_output(None,argsToCommandLine(args),None,None)
     def wait():
         with open(conout,"r") as f:
             try:
@@ -22,3 +22,4 @@ def run_in_async(console,args,callback):
                 pass
         callback()
     Thread(target=wait).start()
+    return pty,conin,conout
