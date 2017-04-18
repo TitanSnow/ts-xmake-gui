@@ -19,16 +19,15 @@ def run_in_async(console,args,callback):
         os.execvp(args[0],args)
         exit(127)
     def wait():
-        f=os.fdopen(fd,"r")
-        try:
-            while True:
-                st=f.readline()
-                if not st:
-                    break
-                insert(st)
-        except IOError:
-            pass
-        f.close()
+        with os.fdopen(fd,"r") as f:
+            try:
+                while True:
+                    st=f.readline()
+                    if not st:
+                        break
+                    insert(st)
+            except IOError:
+                pass
         code=os.waitpid(pid,0)[1]
         insert("Exitcode: %d\n"%code)
         callback()
