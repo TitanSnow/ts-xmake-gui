@@ -11,15 +11,14 @@ def run_in_async(console,args,callback):
     console.config(state=tk.DISABLED)
     conout=capture_output(None,argsToCommandLine(args),None,None)
     def wait():
-        f=open(conout,"r")
-        try:
-            while True:
-                st=f.readline()
-                if not st:
-                    break
-                insert(st)
-        except IOError:
-            pass
-        f.close()
+        with open(conout,"r") as f:
+            try:
+                while True:
+                    st=f.readline()
+                    if not st:
+                        break
+                    insert(st)
+            except IOError:
+                pass
         callback()
     Thread(target=wait).start()

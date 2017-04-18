@@ -351,7 +351,7 @@ def main():
     menubar=tk.Menu(root)
     mn_chores=tk.Menu(root)
     mn_chores.add_command(label="Package",command=win.action_package)
-    mn_chores.add_command(label="Run",command=win.action_run)
+    mn_chores.add_command(label="Run",command=win.action_run,state=tk.DISABLED)
     mn_chores.add_command(label="Global",command=win.action_global)
     mn_chores.add_command(label="Install",command=win.action_install)
     mn_chores.add_command(label="Uninstall",command=win.action_uninstall)
