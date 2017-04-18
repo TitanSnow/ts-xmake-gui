@@ -1,5 +1,6 @@
 from unnamed_exception import UnnamedException
-from ctypes import CDLL,c_wchar_p
+from ctypes import CDLL,c_wchar_p,c_wchar,sizeof
+assert sizeof(c_wchar)==2
 libcapture_output=CDLL("capture_output")
 def capture_output(appname,cmdline,cwd,env):
     if appname!=None:
