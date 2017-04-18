@@ -115,8 +115,8 @@ class MainWin(tk.Frame):
         self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
         self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
 
-        self.btnshutdown=tk.Button(self,text="Shut Input",width=0,state=tk.DISABLED)
-        self.btnshutdown.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+        self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
+        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -155,7 +155,7 @@ class MainWin(tk.Frame):
             if callback:
                 callback()
         self.disable_all()
-        self.fd=terminal.run_in_async(self.console,arglist,reflesh)
+        self.pid,self.fd=terminal.run_in_async(self.console,arglist,reflesh)
 
     @error_handle
     def disable_all(self):
@@ -166,7 +166,7 @@ class MainWin(tk.Frame):
                 pass
         self.inputbar.config(state=tk.NORMAL)
         self.btnsend.config(state=tk.NORMAL)
-        self.btnshutdown.config(state=tk.NORMAL)
+        self.btnkill.config(state=tk.NORMAL)
 
     @error_handle
     def enable_all(self):
@@ -178,7 +178,7 @@ class MainWin(tk.Frame):
         self.console.config(state=tk.DISABLED)
         self.inputbar.config(state=tk.DISABLED)
         self.btnsend.config(state=tk.DISABLED)
-        self.btnshutdown.config(state=tk.DISABLED)
+        self.btnkill.config(state=tk.DISABLED)
 
     @error_handle
     def action_build(self):
@@ -372,6 +372,10 @@ class MainWin(tk.Frame):
     def console_sendinput(self):
         os.write(self.fd,self.inputbar_text.get()+'\n')
         self.inputbar_text.set("")
+
+    @error_handle
+    def console_kill(self):
+        os.kill(self.pid,15)
 
 @error_handle
 def main():
