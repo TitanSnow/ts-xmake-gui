@@ -16,6 +16,7 @@ from os import path
 from tkSimpleDialog import askstring
 
 min_xmake_ver=20000100003L
+VER="2d170418 (posix)"
 
 tiped_exception=set()
 def error_handle(func):
@@ -81,10 +82,10 @@ class MainWin(tk.Frame):
         self.label_config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=2,columnspan=4)
 
         self.reload_conf=tk.Button(self,text="Load",command=self.action_reload_conf)
-        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
+        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4)
 
         self.reconfig=tk.Button(self,text="Config",command=self.action_config)
-        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4,columnspan=2)
+        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=5)
 
         self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
@@ -117,6 +118,9 @@ class MainWin(tk.Frame):
 
         self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
         self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+
+        self.verlabel=tk.Label(self,text=VER,fg="Darkblue")
+        self.verlabel.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
