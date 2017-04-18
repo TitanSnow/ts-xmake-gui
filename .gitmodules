@@ -1,3 +1,0 @@
-[submodule "xmake"]
-	path = bundle-xmake-src
-	url = https://github.com/tboox/xmake.git
