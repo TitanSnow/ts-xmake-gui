@@ -51,7 +51,7 @@ SOFTWARE.
 """
 
 def repeatText(text,count):
-    return ''.join([text]*count)
+    return text*count
 
 def argsToCommandLine(args):
     argv=args
