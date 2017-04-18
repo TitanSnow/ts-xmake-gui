@@ -89,18 +89,21 @@ class MainWin(tk.Frame):
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
         self.label_status=tk.Label(self,text="Status")
-        self.label_status.grid(sticky=tk.W,row=9,columnspan=6)
+        self.label_status.grid(sticky=tk.W,row=10,columnspan=6)
 
         self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
-        self.label_xmake_path.grid(sticky=tk.W,row=10,columnspan=6)
+        self.label_xmake_path.grid(sticky=tk.W,row=11,columnspan=6)
 
         self.label_console=tk.Label(self,text="Console")
-        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=6)
 
         self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.bind("<<insert>>",self.console_insert)
+
+        self.progress=tk.Progressbar(self,length=0)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -327,12 +330,17 @@ class MainWin(tk.Frame):
     @error_handle
     def console_insert(self,e):
         console=self.console
-        console.config(state=tk.NORMAL)
-        while console.insert_queue:
-            st=console.insert_queue.pop(0)
-            console.insert(tk.END,st)
-        console.see(tk.END)
-        console.config(state=tk.DISABLED)
+        if console.insert_queue:
+            console.config(state=tk.NORMAL)
+            while console.insert_queue:
+                st=console.insert_queue.pop(0)
+                console.insert(tk.END,st)
+                rst=re.search(r'^\[(\d{2,3})%\]',st)
+                if rst:
+                    val=int(rst.groups()[0])
+                    self.progress.config(value=val)
+            console.see(tk.END)
+            console.config(state=tk.DISABLED)
 
 @error_handle
 def main():
