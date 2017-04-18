@@ -105,7 +105,16 @@ class MainWin(tk.Frame):
         self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
-        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=2)
+
+        self.inputbar=tk.Entry(self,width=0)
+        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=2,columnspan=2)
+
+        self.btnsend=tk.Button(self,text="Send Input",width=0)
+        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
+
+        self.btnshutdown=tk.Button(self,text="Shut Input",width=0)
+        self.btnshutdown.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
