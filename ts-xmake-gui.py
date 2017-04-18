@@ -16,6 +16,7 @@ from os import path
 from tkinter.simpledialog import askstring
 
 min_xmake_ver=20000100003
+VER="4d170418 (posix)"
 
 tiped_exception=set()
 def error_handle(func):
@@ -81,10 +82,10 @@ class MainWin(tk.Frame):
         self.label_config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=2,columnspan=4)
 
         self.reload_conf=tk.Button(self,text="Load",command=self.action_reload_conf)
-        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
+        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4)
 
         self.reconfig=tk.Button(self,text="Config",command=self.action_config)
-        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4,columnspan=2)
+        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=5)
 
         self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
@@ -105,7 +106,21 @@ class MainWin(tk.Frame):
         self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
-        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=2)
+
+        self.inputbar_text=tk.StringVar()
+        self.inputbar=tk.Entry(self,width=0,textvariable=self.inputbar_text,state=tk.DISABLED)
+        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=2,columnspan=2)
+        self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
+
+        self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
+        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
+
+        self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
+        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+
+        self.verlabel=tk.Label(self,text=VER,fg="Darkblue")
+        self.verlabel.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -140,10 +155,11 @@ class MainWin(tk.Frame):
             self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
+            self.fd=None
             if callback:
                 callback()
         self.disable_all()
-        terminal.run_in_async(self.console,arglist,reflesh)
+        self.pid,self.fd=terminal.run_in_async(self.console,arglist,reflesh)
 
     @error_handle
     def disable_all(self):
@@ -152,6 +168,9 @@ class MainWin(tk.Frame):
                 child.config(state=tk.DISABLED)
             except tk.TclError:
                 pass
+        self.inputbar.config(state=tk.NORMAL)
+        self.btnsend.config(state=tk.NORMAL)
+        self.btnkill.config(state=tk.NORMAL)
 
     @error_handle
     def enable_all(self):
@@ -161,6 +180,9 @@ class MainWin(tk.Frame):
             except tk.TclError:
                 pass
         self.console.config(state=tk.DISABLED)
+        self.inputbar.config(state=tk.DISABLED)
+        self.btnsend.config(state=tk.DISABLED)
+        self.btnkill.config(state=tk.DISABLED)
 
     @error_handle
     def action_build(self):
@@ -299,7 +321,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_run(self):
-        if askokcancel("Warning","We have weak terminal emulation which doesn't support standard input.\n\nIf you run a console program, GUI might be hung up.\n\nContinue?"):
+        if askokcancel("Warning","Weak terminal emulation. Continue?"):
             self.action_common("run")
 
     @error_handle
@@ -349,6 +371,15 @@ class MainWin(tk.Frame):
     def console_ask(self,e):
         self.console.ask_result=askstring(*self.console.ask_param)
         self.console.ask_event.set()
+
+    @error_handle
+    def console_sendinput(self):
+        os.write(self.fd,(self.inputbar_text.get()+'\n').encode('utf8'))
+        self.inputbar_text.set("")
+
+    @error_handle
+    def console_kill(self):
+        os.kill(self.pid,15)
 
 @error_handle
 def main():
