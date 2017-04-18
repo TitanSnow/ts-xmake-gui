@@ -13,6 +13,7 @@ import re
 import webbrowser as wb
 from unnamed_exception import *
 from os import path
+from tkSimpleDialog import askstring
 
 min_xmake_ver=20000100003L
 
@@ -101,6 +102,7 @@ class MainWin(tk.Frame):
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.bind("<<insert>>",self.console_insert)
+        self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
         self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
@@ -341,6 +343,11 @@ class MainWin(tk.Frame):
                     self.progress.config(value=val)
             console.see(tk.END)
             console.config(state=tk.DISABLED)
+
+    @error_handle
+    def console_ask(self,e):
+        self.console.ask_result=askstring(*self.console.ask_param)
+        self.console.ask_event.set()
 
 @error_handle
 def main():
