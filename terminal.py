@@ -33,7 +33,7 @@ def run_in_async(console,args,callback):
                         console.ask_param=('Input Requested',st)
                         console.event_generate("<<ask>>",when="tail")
                         console.ask_event.wait()
-                        os.write(fd,(console.ask_result or '')+'\n')
+                        os.write(fd,((console.ask_result or '')+'\n').encode('utf8'))
             except IOError:
                 pass
         code=os.waitpid(pid,0)[1]
