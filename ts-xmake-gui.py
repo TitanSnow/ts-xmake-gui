@@ -7,7 +7,7 @@ import terminal
 from shutil import rmtree
 import conf_parse as cp
 import json
-from tkMessageBox import showinfo,showerror
+from tkMessageBox import showinfo,showerror,askokcancel
 import subprocess as sp
 import re
 import webbrowser as wb
@@ -299,7 +299,8 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_run(self):
-        self.action_common("run")
+        if askokcancel("Warning","We have weak terminal emulation which doesn't support standard input.\n\nIf you run a console program, GUI might be hanged up.\n\nContinue?"):
+            self.action_common("run")
 
     @error_handle
     def action_global(self):
@@ -366,7 +367,7 @@ def main():
     menubar=tk.Menu(root)
     mn_chores=tk.Menu(root)
     mn_chores.add_command(label="Package",command=win.action_package)
-    mn_chores.add_command(label="Run",command=win.action_run,state=tk.DISABLED)
+    mn_chores.add_command(label="Run",command=win.action_run)
     mn_chores.add_command(label="Global",command=win.action_global)
     mn_chores.add_command(label="Install",command=win.action_install)
     mn_chores.add_command(label="Uninstall",command=win.action_uninstall)
