@@ -299,7 +299,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_run(self):
-        if askokcancel("Warning","We have weak terminal emulation which doesn't support standard input.\n\nIf you run a console program, GUI might be hanged up.\n\nContinue?"):
+        if askokcancel("Warning","We have weak terminal emulation which doesn't support standard input.\n\nIf you run a console program, GUI might be hung up.\n\nContinue?"):
             self.action_common("run")
 
     @error_handle
