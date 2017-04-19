@@ -32,3 +32,6 @@ WINPTY_API LPCWSTR get_conout_name(void* pty){
 WINPTY_API LPCWSTR get_conin_name(void* pty){
     return winpty_conin_name((winpty_t*)pty);
 }
+WINPTY_API void free_pty(void* pty){
+    return winpty_free((winpty_t*)pty);
+}
