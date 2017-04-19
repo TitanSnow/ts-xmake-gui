@@ -7,14 +7,17 @@ import terminal
 from shutil import rmtree
 import conf_parse as cp
 import json
-from tkMessageBox import showinfo,showerror
+from tkMessageBox import showinfo,showerror,askokcancel
 import subprocess as sp
 import re
 import webbrowser as wb
 from unnamed_exception import *
 from os import path
+from tkSimpleDialog import askstring
+from capture_output_wrapper import libcapture_output
 
 min_xmake_ver=20000100003L
+VER="2wd170419 (nt)"
 
 tiped_exception=set()
 def error_handle(func):
@@ -42,7 +45,7 @@ class MainWin(tk.Frame):
         self.label_project.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=0,column=0,columnspan=6)
 
         self.projectdir_input_content=tk.StringVar()
-        self.projectdir_input_content.set(os.getenv("HOME"))
+        self.projectdir_input_content.set(os.getcwd())
         self.projectdir_input=tk.Entry(self,textvariable=self.projectdir_input_content)
         self.projectdir_input.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=1,column=0,columnspan=4)
         self.projectdir_input.bind("<Return>",self.callback_projectdir_input_return)
@@ -80,27 +83,45 @@ class MainWin(tk.Frame):
         self.label_config.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=4,column=2,columnspan=4)
 
         self.reload_conf=tk.Button(self,text="Load",command=self.action_reload_conf)
-        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
+        self.reload_conf.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4)
 
         self.reconfig=tk.Button(self,text="Config",command=self.action_config)
-        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=4,columnspan=2)
+        self.reconfig.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=5)
 
         self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=6,column=2,columnspan=4)
 
         self.label_status=tk.Label(self,text="Status")
-        self.label_status.grid(sticky=tk.W,row=9,columnspan=6)
+        self.label_status.grid(sticky=tk.W,row=10,columnspan=6)
 
         self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...")
-        self.label_xmake_path.grid(sticky=tk.W,row=10,columnspan=6)
+        self.label_xmake_path.grid(sticky=tk.W,row=11,columnspan=6)
 
         self.label_console=tk.Label(self,text="Console")
-        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=6)
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=6)
 
         self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.bind("<<insert>>",self.console_insert)
+        self.console.bind("<<ask>>",self.console_ask)
+
+        self.progress=tk.Progressbar(self,length=0)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=2)
+
+        self.inputbar_text=tk.StringVar()
+        self.inputbar=tk.Entry(self,width=0,textvariable=self.inputbar_text,state=tk.DISABLED)
+        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=2,columnspan=2)
+        self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
+
+        self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
+        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
+
+        self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
+        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+
+        self.verlabel=tk.Label(self,text=VER,fg="Darkblue")
+        self.verlabel.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
 
         self.reflesh_target_list()
         self.reflesh_configarea()
@@ -135,10 +156,12 @@ class MainWin(tk.Frame):
             self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
+            self.pty=None
+            self.fo=None
             if callback:
                 callback()
         self.disable_all()
-        terminal.run_in_async(self.console,arglist,reflesh)
+        self.pty,self.fo=terminal.run_in_async(self.console,arglist,reflesh)
 
     @error_handle
     def disable_all(self):
@@ -147,6 +170,9 @@ class MainWin(tk.Frame):
                 child.config(state=tk.DISABLED)
             except tk.TclError:
                 pass
+        self.inputbar.config(state=tk.NORMAL)
+        self.btnsend.config(state=tk.NORMAL)
+        self.btnkill.config(state=tk.NORMAL)
 
     @error_handle
     def enable_all(self):
@@ -156,6 +182,9 @@ class MainWin(tk.Frame):
             except tk.TclError:
                 pass
         self.console.config(state=tk.DISABLED)
+        self.inputbar.config(state=tk.DISABLED)
+        self.btnsend.config(state=tk.DISABLED)
+        self.btnkill.config(state=tk.DISABLED)
 
     @error_handle
     def action_build(self):
@@ -294,7 +323,8 @@ class MainWin(tk.Frame):
 
     @error_handle
     def action_run(self):
-        self.action_common("run")
+        if askokcancel("Warning","Weak terminal emulation. Continue?"):
+            self.action_common("run")
 
     @error_handle
     def action_global(self):
@@ -327,12 +357,31 @@ class MainWin(tk.Frame):
     @error_handle
     def console_insert(self,e):
         console=self.console
-        console.config(state=tk.NORMAL)
-        while console.insert_queue:
-            st=console.insert_queue.pop(0)
-            console.insert(tk.END,st)
-        console.see(tk.END)
-        console.config(state=tk.DISABLED)
+        if console.insert_queue:
+            console.config(state=tk.NORMAL)
+            while console.insert_queue:
+                st=console.insert_queue.pop(0)
+                console.insert(tk.END,st)
+                rst=re.search(r'^\[(\d{2,3})%\]',st)
+                if rst:
+                    val=int(rst.groups()[0])
+                    self.progress.config(value=val)
+            console.see(tk.END)
+            console.config(state=tk.DISABLED)
+
+    @error_handle
+    def console_ask(self,e):
+        self.console.ask_result=askstring(*self.console.ask_param)
+        self.console.ask_event.set()
+
+    @error_handle
+    def console_sendinput(self):
+        self.fo.write(self.inputbar_text.get()+'\n')
+        self.inputbar_text.set("")
+
+    @error_handle
+    def console_kill(self):
+        libcapture_output.free_pty(self.pty)
 
 @error_handle
 def main():
@@ -351,7 +400,7 @@ def main():
     menubar=tk.Menu(root)
     mn_chores=tk.Menu(root)
     mn_chores.add_command(label="Package",command=win.action_package)
-    mn_chores.add_command(label="Run",command=win.action_run,state=tk.DISABLED)
+    mn_chores.add_command(label="Run",command=win.action_run)
     mn_chores.add_command(label="Global",command=win.action_global)
     mn_chores.add_command(label="Install",command=win.action_install)
     mn_chores.add_command(label="Uninstall",command=win.action_uninstall)

@@ -1,7 +1,8 @@
 import tk
 from argsToCommandLine import argsToCommandLine
 from capture_output_wrapper import capture_output
-from threading import Thread
+import re
+from threading import Thread,Event
 def run_in_async(console,args,callback):
     def insert(st):
         console.insert_queue.append(st)
@@ -10,6 +11,7 @@ def run_in_async(console,args,callback):
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)
     pty,conin,conout=capture_output(None,argsToCommandLine(args),None,None)
+    fo=open(conin,"w")
     def wait():
         with open(conout,"r") as f:
             try:
@@ -18,8 +20,14 @@ def run_in_async(console,args,callback):
                     if not st:
                         break
                     insert(st)
+                    if re.search('^please input:',st):
+                        console.ask_event=Event()
+                        console.ask_param=('Input Requested',st)
+                        console.event_generate("<<ask>>",when="tail")
+                        console.ask_event.wait()
+                        fo.write((console.ask_result or '')+'\n')
             except IOError:
                 pass
         callback()
     Thread(target=wait).start()
-    return pty,conin,conout
+    return pty,fo
