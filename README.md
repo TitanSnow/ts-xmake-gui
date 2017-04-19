@@ -9,23 +9,25 @@ An ugly xmake gui :beer:
 
 * *legacy* (not recommended)
 * *posix* (for posix users, recommended)
-* *nt* (for Windows users, recommended)
+* *nt* (for Windows users, *not* recommended)
 * *3* (the python3 version of branch legacy)
 * *4* (the python3 version of branch posix)
-* *release* (releases)
+* *newnt* (new Windows version! recommended)
 
-<sub>the reason why branch release exists is that dev branches usually have xmake bundled that hasn't released yet, so release degrades it</sub>
-
-## require
+## on posix
+### require
 python with tkinter is required
+
+py3 version needs python3 with tkinter
 
 on my ubuntu:
 ```console
-$ sudo apt install python python-tk
+$ sudo apt install python  python-tk    # py2
+$ sudo apt install python3 python3-tk   # py3
 ```
 
-## usage
-### installation
+### usage
+#### installation
 ```console
 $ git clone -b <branch_name> https://github.com/TitanSnow/ts-xmake-gui.git    #specify branch in <branch_name>
 $ cd ts-xmake-gui
@@ -34,17 +36,23 @@ $ make build
 $ sudo make install
 ```
 
-### run
+#### run
 in console
 ```
 /path/to/ts-xmake-gui$ ./ts-xmake-gui.py
 ```
 or any other way to run it you like
 
-### for windows users
-just download the exe file from lastest release then run it
+## on Windows
+just download the file from [release](https://github.com/TitanSnow/ts-xmake-gui/releases)
+
+<sub>note: not support Windows XP but you could build by yourself to make it be able to run on XP. See below</sub>
+
+### build
+the steps of build is listed in [.appveyor.yml](https://github.com/TitanSnow/ts-xmake-gui/blob/newnt/.appveyor.yml)
 
 ## demo
-*note: this demo is out of date*
+making...
 
-![demo.gif](docs/demo.gif)
+## little note
+there is a cross-platform pseudo terminal (pty) solution in this repo to capture console app's output if you're interested in it
