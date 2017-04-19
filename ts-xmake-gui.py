@@ -44,7 +44,7 @@ class MainWin(tk.Frame):
         self.label_project.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=0,column=0,columnspan=6)
 
         self.projectdir_input_content=tk.StringVar()
-        self.projectdir_input_content.set(os.getenv("HOME"))
+        self.projectdir_input_content.set(os.getcwd())
         self.projectdir_input=tk.Entry(self,textvariable=self.projectdir_input_content)
         self.projectdir_input.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=1,column=0,columnspan=4)
         self.projectdir_input.bind("<Return>",self.callback_projectdir_input_return)
