@@ -377,6 +377,7 @@ class MainWin(tk.Frame):
     @error_handle
     def console_sendinput(self):
         self.fo.write(self.inputbar_text.get()+'\n')
+        self.fo.flush()
         self.inputbar_text.set("")
 
     @error_handle

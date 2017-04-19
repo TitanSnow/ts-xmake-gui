@@ -26,6 +26,7 @@ def run_in_async(console,args,callback):
                         console.event_generate("<<ask>>",when="tail")
                         console.ask_event.wait()
                         fo.write((console.ask_result or '')+'\n')
+                        fo.flush()
             except IOError:
                 pass
         callback()
