@@ -1,6 +1,3 @@
-[submodule "xmake"]
-	path = bundle-xmake-src
-	url = https://github.com/tboox/xmake.git
 [submodule "winpty"]
 	path = capture_output/winpty
 	url = https://github.com/TitanSnow/winpty.git
