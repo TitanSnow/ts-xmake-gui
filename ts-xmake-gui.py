@@ -409,6 +409,7 @@ def main():
     mn_chores.add_command(label="Project",command=win.action_project)
     mn_chores.add_command(label="Hello",command=win.action_hello)
     mn_chores.add_separator()
+    mn_chores.add_command(label="Tree",command=lambda :tree.init(root))
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
