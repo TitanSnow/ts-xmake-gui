@@ -14,6 +14,7 @@ import webbrowser as wb
 from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
+import tree
 
 min_xmake_ver=20000100003L
 VER="2d170418 (posix)"
@@ -432,6 +433,7 @@ def main():
         tiped_exception=set()
         root.after(60000,clear_tiped_exception)
     clear_tiped_exception()
+    tree.init(root)
     win.mainloop()
 if __name__=="__main__":
     main()
