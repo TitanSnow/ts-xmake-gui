@@ -1,5 +1,6 @@
 import tk
 import os
+import subprocess as sp
 class TreeDialog:
     def __init__(self,root,error_handle=lambda f:f):
         try:
@@ -45,6 +46,9 @@ class TreeDialog:
             if not index:return
             fn=self.flst.get(index)
             fp=os.path.join(self.cwd,fn)
-            # TODO
+            oldcwd=os.getcwd()
+            os.chdir(self.cwd)
+            sp.Popen(['xdg-open',fp])
+            os.chdir(oldcwd)
         self.flst.bind("<Double-Button-1>",callback_file)
         list_file()
