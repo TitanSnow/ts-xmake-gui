@@ -35,4 +35,11 @@ class TreeDialog:
             browse(path)
             root.event_generate("<<chprojectdir>>",when="tail")
         self.tree.config(command=chdir)
+        def callback_file(e):
+            index=self.flst.curselection()
+            if not index:return
+            fn=self.flst.get(index)
+            fp=os.path.join(self.cwd,fn)
+            # TODO
+        self.flst.bind("<Double-Button-1>",callback_file)
         list_file()
