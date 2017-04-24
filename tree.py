@@ -40,11 +40,19 @@ class TreeDialog:
             root.event_generate("<<chprojectdir>>",when="tail")
         self.tree.config(command=chdir)
         @error_handle
+        def open_file(e,fn,fp):
+            # TODO
+        @error_handle
+        def method_file(e,fn,fp):
+            # TODO
+        @error_handle
         def callback_file(e):
             index=self.flst.curselection()
             if not index:return
             fn=self.flst.get(index)
             fp=os.path.join(self.cwd,fn)
-            # TODO
+            if e.num==1:open_file(e,fn,fp)
+            elif e.num==3:method_file(e,fn,fp)
         self.flst.bind("<Double-Button-1>",callback_file)
+        self.flst.bind("<ButtonRelease-3>",callback_file)
         list_file()
