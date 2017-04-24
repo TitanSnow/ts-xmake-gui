@@ -434,7 +434,7 @@ def main():
         tiped_exception=set()
         root.after(60000,clear_tiped_exception)
     clear_tiped_exception()
-    treeDialog=tree.TreeDialog(root)
+    treeDialog=tree.TreeDialog(root,error_handle)
     @error_handle
     def chprojectdir(e):
         win.projectdir_input_content.set(treeDialog.cwd)
