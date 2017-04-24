@@ -42,9 +42,11 @@ class TreeDialog:
         @error_handle
         def open_file(e,fn,fp):
             # TODO
+            pass
         @error_handle
         def method_file(e,fn,fp):
             # TODO
+            pass
         @error_handle
         def callback_file(e):
             index=self.flst.curselection()
