@@ -409,7 +409,7 @@ def main():
     mn_chores.add_command(label="Project",command=win.action_project)
     mn_chores.add_command(label="Hello",command=win.action_hello)
     mn_chores.add_separator()
-    mn_chores.add_command(label="Tree",command=lambda :tree.init(root))
+    mn_chores.add_command(label="Tree",command=lambda :tree.TreeDialog(root))
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
@@ -434,7 +434,12 @@ def main():
         tiped_exception=set()
         root.after(60000,clear_tiped_exception)
     clear_tiped_exception()
-    tree.init(root)
+    treeDialog=tree.TreeDialog(root)
+    @error_handle
+    def chprojectdir(e):
+        win.projectdir_input_content.set(treeDialog.cwd)
+        win.callback_projectdir_input_return(None)
+    root.bind("<<chprojectdir>>",chprojectdir)
     win.mainloop()
 if __name__=="__main__":
     main()
