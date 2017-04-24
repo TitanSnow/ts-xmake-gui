@@ -353,6 +353,14 @@ class MainWin(tk.Frame):
         self.action_common("hello")
 
     @error_handle
+    def action_version(self):
+        self.action_common("--version")
+
+    @error_handle
+    def action_help(self):
+        self.action_common("--help")
+
+    @error_handle
     def console_insert(self,e):
         console=self.console
         if console.insert_queue:
@@ -407,6 +415,9 @@ def main():
     mn_chores.add_command(label="Doxygen",command=win.action_doxygen)
     mn_chores.add_command(label="Project",command=win.action_project)
     mn_chores.add_command(label="Hello",command=win.action_hello)
+    mn_chores.add_separator()
+    mn_chores.add_command(label="Version",command=win.action_version)
+    mn_chores.add_command(label="Help",command=win.action_help)
     mn_chores.add_separator()
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
