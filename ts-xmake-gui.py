@@ -14,6 +14,7 @@ import webbrowser as wb
 from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
+from terminal_string import delete_escape
 
 min_xmake_ver=20000100003L
 VER="2d170418 (posix)"
@@ -103,7 +104,6 @@ class MainWin(tk.Frame):
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.bind("<<insert>>",self.console_insert)
-        self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
         self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=3)
@@ -383,18 +383,20 @@ class MainWin(tk.Frame):
             console.config(state=tk.NORMAL)
             while console.insert_queue:
                 st=console.insert_queue.pop(0)
+                st=delete_escape(st)
                 console.insert(tk.END,st)
                 rst=re.search(r'^\[(\d{2,3})%\]',st)
                 if rst:
                     val=int(rst.groups()[0])
                     self.progress.config(value=val)
+                elif re.search('^please input:',st):
+                    os.write(self.fd,(self.console_ask('Input Requested',st) or '')+'\n')
             console.see(tk.END)
             console.config(state=tk.DISABLED)
 
     @error_handle
-    def console_ask(self,e):
-        self.console.ask_result=askstring(*self.console.ask_param)
-        self.console.ask_event.set()
+    def console_ask(self,title,body):
+        return askstring(title,body)
 
     @error_handle
     def console_sendinput(self):
