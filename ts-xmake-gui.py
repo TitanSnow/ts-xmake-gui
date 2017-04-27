@@ -97,7 +97,7 @@ class MainWin(tk.Frame):
         self.label_xmake_path.grid(sticky=tk.W,row=11,columnspan=6)
 
         self.label_console=tk.Label(self,text="Console")
-        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=6)
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=3)
 
         self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
@@ -106,18 +106,21 @@ class MainWin(tk.Frame):
         self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
-        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=2)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=3)
 
         self.inputbar_text=tk.StringVar()
         self.inputbar=tk.Entry(self,width=0,textvariable=self.inputbar_text,state=tk.DISABLED)
-        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=2,columnspan=2)
+        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=3,columnspan=3)
         self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
 
         self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
-        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
+        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=5)
+
+        self.btnshut=tk.Button(self,text="Shut Input",width=0,state=tk.DISABLED,command=self.console_shut)
+        self.btnshut.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=4)
 
         self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
-        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=3)
 
         self.verlabel=tk.Label(self,text=VER,fg="Darkblue")
         self.verlabel.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
@@ -170,6 +173,7 @@ class MainWin(tk.Frame):
                 pass
         self.inputbar.config(state=tk.NORMAL)
         self.btnsend.config(state=tk.NORMAL)
+        self.btnshut.config(state=tk.NORMAL)
         self.btnkill.config(state=tk.NORMAL)
 
     @error_handle
@@ -182,6 +186,7 @@ class MainWin(tk.Frame):
         self.console.config(state=tk.DISABLED)
         self.inputbar.config(state=tk.DISABLED)
         self.btnsend.config(state=tk.DISABLED)
+        self.btnshut.config(state=tk.DISABLED)
         self.btnkill.config(state=tk.DISABLED)
 
     @error_handle
@@ -361,6 +366,17 @@ class MainWin(tk.Frame):
         self.action_common("--help")
 
     @error_handle
+    def action_shell(self):
+        if askokcancel("Warning","Weak terminal emulation. Continue?"):
+            def reflesh():
+                self.enable_all()
+                self.reflesh_target_list()
+                self.reflesh_configarea()
+                self.fd=None
+            self.disable_all()
+            self.pid,self.fd=terminal.run_in_async(self.console,["/bin/sh"],reflesh)
+
+    @error_handle
     def console_insert(self,e):
         console=self.console
         if console.insert_queue:
@@ -384,6 +400,10 @@ class MainWin(tk.Frame):
     def console_sendinput(self):
         os.write(self.fd,self.inputbar_text.get()+'\n')
         self.inputbar_text.set("")
+
+    @error_handle
+    def console_shut(self):
+        os.write(self.fd,'\04')
 
     @error_handle
     def console_kill(self):
@@ -419,6 +439,7 @@ def main():
     mn_chores.add_command(label="Version",command=win.action_version)
     mn_chores.add_command(label="Help",command=win.action_help)
     mn_chores.add_separator()
+    mn_chores.add_command(label="Shell",command=win.action_shell)
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
