@@ -104,7 +104,8 @@ class MainWin(tk.Frame):
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.linebuf=[]
-        self.console.delete_escape=EscapeDeleter().delete_escape
+        self.console.escape_deleter=EscapeDeleter(self.console)
+        self.console.delete_escape=self.console.escape_deleter.delete_escape
         self.console.bind("<<insert>>",self.console_insert)
 
         self.progress=tk.Progressbar(self,length=0)
@@ -386,7 +387,7 @@ class MainWin(tk.Frame):
             while console.insert_queue:
                 st=console.insert_queue.pop(0)
                 st=console.delete_escape(st)
-                console.insert(tk.END,st)
+                console.insert(tk.END,st,console.escape_deleter.get_tag())
                 if st=='\n':
                     st=''.join(console.linebuf)
                     rst=re.search(r'^\[(\d{2,3})%\]',st)
