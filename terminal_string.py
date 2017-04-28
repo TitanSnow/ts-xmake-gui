@@ -31,13 +31,13 @@ class EscapeDeleter:
             return ''.join([self.delete_escape(ch) for ch in st])
         if st=='\x1b':
             self.__escaped=True
-        elif self.__escaped and st=='m':
+        elif self.__escaped and not re.search(r'^(?:\d|;|\[|)$',st):
             self.__escaped=False
             ess=''.join(self.__escapes)
             self.__escapes=[]
             rst=re.search(r'^\x1b\[(\d+)(?:;(\d+))?$',ess)
             if rst:
-                for tag in map(lambda x:int(x),filter(lambda x:x,rst.groups())):
+                for tag in map(lambda x:int(x or '0'),filter(lambda x:x!=None,rst.groups())):
                     if tag==0:
                         self.__tag=[]
                     elif str(tag) in COLOR_TABLE:
