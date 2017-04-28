@@ -391,7 +391,7 @@ class MainWin(tk.Frame):
         cmds=[]
         for x in [x for x in COLOR_TABLE if x[0]=='4']:
             for y in [y for y in COLOR_TABLE if y[0]=='3']:
-                cmds.append("echo -ne '\x1b[%d;%dmawd\x1b[0m'"%(int(x),int(y)))
+                cmds.append("echo -ne '\x1b[%d;%dm%02d;%02d\x1b[0m'"%((int(x),int(y))*2))
             cmds.append("echo ''")
         args=["/bin/bash","-c",';'.join(cmds)]
         self.pid,self.fd=terminal.run_in_async(self.console,args,reflesh)
