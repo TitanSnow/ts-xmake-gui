@@ -114,6 +114,7 @@ class MainWin(tk.Frame):
         self.inputbar=tk.Entry(self,width=0,textvariable=self.inputbar_text,state=tk.DISABLED)
         self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=3,columnspan=3)
         self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
+        self.inputbar.bind("<Control-d>",lambda e:self.console_shut())
 
         self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
         self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=5)
