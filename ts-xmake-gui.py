@@ -17,7 +17,7 @@ from tkinter.simpledialog import askstring
 from terminal_string import EscapeDeleter,COLOR_TABLE
 
 min_xmake_ver=20000100003
-VER="4d170418 (posix)"
+VER="ts-xmake-gui"
 
 tiped_exception=set()
 def error_handle(func):
