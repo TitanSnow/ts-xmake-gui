@@ -389,8 +389,8 @@ class MainWin(tk.Frame):
             self.fd=None
         self.disable_all()
         cmds=[]
-        for x in filter(lambda x:x[0]=='4',COLOR_TABLE):
-            for y in filter(lambda x:x[0]=='3',COLOR_TABLE):
+        for x in [x for x in COLOR_TABLE if x[0]=='4']:
+            for y in [y for y in COLOR_TABLE if y[0]=='3']:
                 cmds.append("echo -ne '\x1b[%d;%dmawd\x1b[0m'"%(int(x),int(y)))
             cmds.append("echo ''")
         args=["/bin/bash","-c",';'.join(cmds)]
@@ -412,16 +412,12 @@ class MainWin(tk.Frame):
                         val=int(rst.groups()[0])
                         self.progress.config(value=val)
                     elif re.search('^please input:',st):
-                        os.write(self.fd,(self.console_ask('Input Requested',st) or '')+'\n')
+                        os.write(self.fd,(askstring('Input Requested',st) or '')+'\n')
                     console.linebuf=[]
                 else:
                     console.linebuf.append(st)
             console.see(tk.END)
             console.config(state=tk.DISABLED)
-
-    @error_handle
-    def console_ask(self,title,body):
-        return askstring(title,body)
 
     @error_handle
     def console_sendinput(self):
