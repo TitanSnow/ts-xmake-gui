@@ -23,6 +23,7 @@ def run_in_async(console,args,callback):
         except OSError as e:
             if e.errno!=5:
                 raise
+        os.close(fd)
         code=os.waitpid(pid,0)[1]
         insert("Exitcode: %d\n"%code)
         callback()
