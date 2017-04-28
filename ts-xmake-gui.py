@@ -389,8 +389,8 @@ class MainWin(tk.Frame):
             self.fd=None
         self.disable_all()
         cmds=[]
-        for x in [x for x in COLOR_TABLE if x[0]=='4']:
-            for y in [y for y in COLOR_TABLE if y[0]=='3']:
+        for x in sorted([x for x in COLOR_TABLE if x[0]=='4']):
+            for y in sorted([y for y in COLOR_TABLE if y[0]=='3']):
                 cmds.append("echo -ne '\x1b[%d;%dm%02d;%02d\x1b[0m'"%((int(x),int(y))*2))
             cmds.append("echo ''")
         args=["/bin/bash","-c",';'.join(cmds)]
