@@ -14,7 +14,7 @@ import webbrowser as wb
 from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
-from terminal_string import EscapeDeleter
+from terminal_string import EscapeDeleter,COLOR_TABLE
 
 min_xmake_ver=20000100003L
 VER="2d170418 (posix)"
@@ -380,6 +380,22 @@ class MainWin(tk.Frame):
             self.pid,self.fd=terminal.run_in_async(self.console,["/bin/sh"],reflesh)
 
     @error_handle
+    def action_color(self):
+        def reflesh():
+            self.enable_all()
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+            self.fd=None
+        self.disable_all()
+        cmds=[]
+        for x in filter(lambda x:x[0]=='4',COLOR_TABLE):
+            for y in filter(lambda x:x[0]=='3',COLOR_TABLE):
+                cmds.append("echo -ne '\x1b[%d;%dmawd\x1b[0m'"%(int(x),int(y)))
+            cmds.append("echo ''")
+        args=["/bin/bash","-c",';'.join(cmds)]
+        self.pid,self.fd=terminal.run_in_async(self.console,args,reflesh)
+
+    @error_handle
     def console_insert(self,e):
         console=self.console
         if console.insert_queue:
@@ -450,6 +466,7 @@ def main():
     mn_chores.add_command(label="Help",command=win.action_help)
     mn_chores.add_separator()
     mn_chores.add_command(label="Shell",command=win.action_shell)
+    mn_chores.add_command(label="Color test",command=win.action_color)
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
