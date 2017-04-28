@@ -1,0 +1,38 @@
+#!/bin/bash
+set -o pipefail
+if [ 0 -ne $(id -u) ]
+then
+    sudoprefix=sudo
+else
+    sudoprefix=
+fi
+my_exit(){
+    rv=$?
+    if [ "x$1" != x ]
+    then
+        echo -ne '\x1b[41;37m'
+        echo "$1"
+        echo -ne '\x1b[0m'
+    fi
+    if [ "x$2" != x ]
+    then
+        if [ $rv -eq 0 ];then rv=$2;fi
+    fi
+    exit $rv
+}
+test_tools()
+{
+    {
+        curl --version &&
+        python -c '__import__("ts-xmake-gui")'
+    } >/dev/null 2>&1
+}
+install_tools()
+{
+    { apt-get --version >/dev/null 2>&1 && $sudoprefix apt-get install -y curl python python-tk; } ||
+    { yum --version >/dev/null 2>&1 && $sudoprefix yum install -y curl python tkinter; } ||
+    { zypper --version >/dev/null 2>&1 && $sudoprefix zypper --non-interactive install curl python python-tk; } ||
+    { pacman -V >/dev/null 2>&1 && $sudoprefix pacman -S --noconfirm curl python tk; }
+}
+test_tools || { install_tools && test_tools; } || my_exit 'Dependencies Installation Fail' 1
+xmake --version >/dev/null 2>&1 || bash <(curl -fsSL https://raw.githubusercontent.com/tboox/xmake/master/scripts/get.sh) && echo 'Finish. Use `./ts-xmake-gui.py` to launch'
