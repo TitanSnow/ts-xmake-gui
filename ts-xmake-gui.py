@@ -480,6 +480,13 @@ def main():
     mn_help.add_command(label="Help",command=show_help)
     mn_help.add_command(label="About",command=show_about)
     menubar.add_cascade(label="Help",menu=mn_help)
+    mn_theme=tk.Menu(root)
+    style=tk.Style()
+    for sty in style.theme_names():
+        def un(sty):
+            mn_theme.add_command(label=sty,command=lambda :style.theme_use(sty))
+        un(sty)
+    menubar.add_cascade(label="Theme",menu=mn_theme)
     root.config(menu=menubar)
     if not win.test_xmake_path():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
