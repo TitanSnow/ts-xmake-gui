@@ -1,9 +1,7 @@
 import pty
 import os
 import tk
-import re
-from threading import Thread,Event
-from terminal_string import delete_color
+from threading import Thread
 def run_in_async(console,args,callback):
     def insert(st):
         console.insert_queue.append(st)
@@ -13,29 +11,19 @@ def run_in_async(console,args,callback):
     console.config(state=tk.DISABLED)
     pid,fd=pty.fork()
     if pid==0:
-        #dn=os.open(os.devnull,0)
-        #if dn!=0:
-            #os.dup2(dn,0)
-            #os.close(dn)
         os.execvp(args[0],args)
         exit(127)
     def wait():
-        with os.fdopen(fd,"r") as f:
-            try:
-                while True:
-                    st=f.readline()
-                    if not st:
-                        break
-                    st=delete_color(st)
-                    insert(st)
-                    if re.search('^please input:',st):
-                        console.ask_event=Event()
-                        console.ask_param=('Input Requested',st)
-                        console.event_generate("<<ask>>",when="tail")
-                        console.ask_event.wait()
-                        os.write(fd,((console.ask_result or '')+'\n').encode('utf8'))
-            except IOError:
-                pass
+        try:
+            while True:
+                st=os.read(fd,1).decode('latin_1')
+                if not st:
+                    break
+                insert(st)
+        except OSError as e:
+            if e.errno!=5:
+                raise
+        os.close(fd)
         code=os.waitpid(pid,0)[1]
         insert("Exitcode: %d\n"%code)
         callback()

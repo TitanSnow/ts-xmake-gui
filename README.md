@@ -3,7 +3,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3e71f53ba7774984929858de3490f1d9)](https://www.codacy.com/app/TitanSnow/ts-xmake-gui?utm_source=github.com&utm_medium=referral&utm_content=TitanSnow/ts-xmake-gui&utm_campaign=badger)
 [![Build status](https://ci.appveyor.com/api/projects/status/4rvf8go6kjy6ds9l?svg=true)](https://ci.appveyor.com/project/TitanSnow/ts-xmake-gui)
 
-An ugly xmake gui :beer:
+An ugly xmake gui :tada:
 
 ## branches
 
@@ -15,33 +15,9 @@ An ugly xmake gui :beer:
 * *newnt* (new Windows version! recommended)
 
 ## on posix
-### require
-python with tkinter is required
-
-py3 version needs python3 with tkinter
-
-on my ubuntu:
 ```console
-$ sudo apt install python  python-tk    # py2
-$ sudo apt install python3 python3-tk   # py3
+$ ./configure
 ```
-
-### usage
-#### installation
-```console
-$ git clone -b <branch_name> https://github.com/TitanSnow/ts-xmake-gui.git    #specify branch in <branch_name>
-$ cd ts-xmake-gui
-$ git submodule update --init
-$ make build
-$ sudo make install
-```
-
-#### run
-in console
-```
-/path/to/ts-xmake-gui$ ./ts-xmake-gui.py
-```
-or any other way to run it you like
 
 ## on Windows
 just download the file from [release](https://github.com/TitanSnow/ts-xmake-gui/releases)
@@ -50,9 +26,6 @@ just download the file from [release](https://github.com/TitanSnow/ts-xmake-gui/
 
 ### build
 the steps of build is listed in [.appveyor.yml](https://github.com/TitanSnow/ts-xmake-gui/blob/newnt/.appveyor.yml)
-
-## demo
-making...
 
 ## little note
 there is a cross-platform pseudo terminal (pty) solution in this repo to capture console app's output if you're interested in it

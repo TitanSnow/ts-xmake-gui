@@ -14,6 +14,7 @@ import webbrowser as wb
 from unnamed_exception import *
 from os import path
 from tkinter.simpledialog import askstring
+from terminal_string import EscapeDeleter,COLOR_TABLE
 
 min_xmake_ver=20000100003
 VER="4d170418 (posix)"
@@ -97,27 +98,33 @@ class MainWin(tk.Frame):
         self.label_xmake_path.grid(sticky=tk.W,row=11,columnspan=6)
 
         self.label_console=tk.Label(self,text="Console")
-        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=6)
+        self.label_console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,columnspan=3)
 
         self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
         self.console.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=7,columnspan=6)
         self.console.insert_queue=[]
+        self.console.linebuf=[]
+        self.console.escape_deleter=EscapeDeleter(self.console)
+        self.console.delete_escape=self.console.escape_deleter.delete_escape
         self.console.bind("<<insert>>",self.console_insert)
-        self.console.bind("<<ask>>",self.console_ask)
 
         self.progress=tk.Progressbar(self,length=0)
-        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=2)
+        self.progress.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,columnspan=3)
 
         self.inputbar_text=tk.StringVar()
         self.inputbar=tk.Entry(self,width=0,textvariable=self.inputbar_text,state=tk.DISABLED)
-        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=2,columnspan=2)
+        self.inputbar.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=3,columnspan=3)
         self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
+        self.inputbar.bind("<Control-d>",lambda e:self.console_shut())
 
         self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
-        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=4)
+        self.btnsend.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=5)
+
+        self.btnshut=tk.Button(self,text="Shut Input",width=0,state=tk.DISABLED,command=self.console_shut)
+        self.btnshut.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=4)
 
         self.btnkill=tk.Button(self,text="Kill",width=0,state=tk.DISABLED,command=self.console_kill)
-        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=8,column=5)
+        self.btnkill.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=9,column=3)
 
         self.verlabel=tk.Label(self,text=VER,fg="Darkblue")
         self.verlabel.grid(sticky=tk.W+tk.E+tk.N+tk.S,row=5,column=2,columnspan=2)
@@ -170,6 +177,7 @@ class MainWin(tk.Frame):
                 pass
         self.inputbar.config(state=tk.NORMAL)
         self.btnsend.config(state=tk.NORMAL)
+        self.btnshut.config(state=tk.NORMAL)
         self.btnkill.config(state=tk.NORMAL)
 
     @error_handle
@@ -182,6 +190,7 @@ class MainWin(tk.Frame):
         self.console.config(state=tk.DISABLED)
         self.inputbar.config(state=tk.DISABLED)
         self.btnsend.config(state=tk.DISABLED)
+        self.btnshut.config(state=tk.DISABLED)
         self.btnkill.config(state=tk.DISABLED)
 
     @error_handle
@@ -228,7 +237,7 @@ class MainWin(tk.Frame):
         try:
             os.chdir(self.projectdir_input_content.get())
             with open(path.join(".xmake","xmake.conf"),"r") as f:
-                configs=cp.loads(str(f.read()))
+                configs=cp.loads(f.read())
             return configs
         except (OSError,IOError,ValueError):
             return
@@ -353,29 +362,71 @@ class MainWin(tk.Frame):
         self.action_common("hello")
 
     @error_handle
+    def action_version(self):
+        self.action_common("--version")
+
+    @error_handle
+    def action_help(self):
+        self.action_common("--help")
+
+    @error_handle
+    def action_shell(self):
+        if askokcancel("Warning","Weak terminal emulation. Continue?"):
+            def reflesh():
+                self.enable_all()
+                self.reflesh_target_list()
+                self.reflesh_configarea()
+                self.fd=None
+            self.disable_all()
+            self.pid,self.fd=terminal.run_in_async(self.console,["/bin/sh"],reflesh)
+
+    @error_handle
+    def action_color(self):
+        def reflesh():
+            self.enable_all()
+            self.reflesh_target_list()
+            self.reflesh_configarea()
+            self.fd=None
+        self.disable_all()
+        cmds=[]
+        for x in sorted([x for x in COLOR_TABLE if x[0]=='4']):
+            for y in sorted([y for y in COLOR_TABLE if y[0]=='3']):
+                cmds.append("echo -ne '\x1b[%d;%dm%02d;%02d\x1b[0m'"%((int(x),int(y))*2))
+            cmds.append("echo ''")
+        args=["/bin/bash","-c",';'.join(cmds)]
+        self.pid,self.fd=terminal.run_in_async(self.console,args,reflesh)
+
+    @error_handle
     def console_insert(self,e):
         console=self.console
         if console.insert_queue:
             console.config(state=tk.NORMAL)
             while console.insert_queue:
                 st=console.insert_queue.pop(0)
-                console.insert(tk.END,st)
-                rst=re.search(r'^\[(\d{2,3})%\]',st)
-                if rst:
-                    val=int(rst.groups()[0])
-                    self.progress.config(value=val)
+                st=console.delete_escape(st)
+                console.insert(tk.END,st,console.escape_deleter.get_tag())
+                if st=='\n':
+                    st=''.join(console.linebuf)
+                    rst=re.search(r'^\[(\d{2,3})%\]',st)
+                    if rst:
+                        val=int(rst.groups()[0])
+                        self.progress.config(value=val)
+                    elif re.search('^please input:',st):
+                        os.write(self.fd,((askstring('Input Requested',st) or '')+'\n').encode())
+                    console.linebuf=[]
+                else:
+                    console.linebuf.append(st)
             console.see(tk.END)
             console.config(state=tk.DISABLED)
 
     @error_handle
-    def console_ask(self,e):
-        self.console.ask_result=askstring(*self.console.ask_param)
-        self.console.ask_event.set()
+    def console_sendinput(self):
+        os.write(self.fd,(self.inputbar_text.get()+'\n').encode())
+        self.inputbar_text.set("")
 
     @error_handle
-    def console_sendinput(self):
-        os.write(self.fd,(self.inputbar_text.get()+'\n').encode('utf8'))
-        self.inputbar_text.set("")
+    def console_shut(self):
+        os.write(self.fd,'\04'.encode())
 
     @error_handle
     def console_kill(self):
@@ -408,6 +459,11 @@ def main():
     mn_chores.add_command(label="Project",command=win.action_project)
     mn_chores.add_command(label="Hello",command=win.action_hello)
     mn_chores.add_separator()
+    mn_chores.add_command(label="Version",command=win.action_version)
+    mn_chores.add_command(label="Help",command=win.action_help)
+    mn_chores.add_separator()
+    mn_chores.add_command(label="Shell",command=win.action_shell)
+    mn_chores.add_command(label="Color test",command=win.action_color)
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
     mn_option=tk.Menu(root)
@@ -420,6 +476,13 @@ def main():
     mn_help.add_command(label="Help",command=show_help)
     mn_help.add_command(label="About",command=show_about)
     menubar.add_cascade(label="Help",menu=mn_help)
+    mn_theme=tk.Menu(root)
+    style=tk.Style()
+    for sty in style.theme_names():
+        def un(sty):
+            mn_theme.add_command(label=sty,command=lambda :style.theme_use(sty))
+        un(sty)
+    menubar.add_cascade(label="Theme",menu=mn_theme)
     root.config(menu=menubar)
     if not win.test_xmake_path():
         win.label_xmake_path["text"]="xmake_path: "+win.get_xmake_path()+"\t..FAIL!"
