@@ -37,7 +37,11 @@ class EscapeDeleter:
             self.__escapes=[]
             rst=re.search(r'^\x1b\[(\d+)(?:;(\d+))?$',ess)
             if rst:
-                self.__tag+=map(lambda x:str(int(x)),filter(lambda x:x,rst.groups()))
+                for tag in map(lambda x:int(x),filter(lambda x:x,rst.groups())):
+                    if tag==0:
+                        self.__tag=[]
+                    elif str(tag) in COLOR_TABLE:
+                        self.__tag=filter(lambda x:x[0]!=str(tag)[0],self.__tag)+[str(tag)]
         elif not self.__escaped and st!='\r':
             return st
         if self.__escaped:
