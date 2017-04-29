@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>ts-xmake-gui</title>
+<link rel="stylesheet" href="github-markdown.css"/>
+<style>
+.markdown-body{
+    max-width:888px;
+    margin:auto;
+}
+</style>
+<div class="markdown-body">
+<h1 id="ts-xmake-gui">ts-xmake-gui</h1>
+<p><a href="https://www.codacy.com/app/TitanSnow/ts-xmake-gui?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TitanSnow/ts-xmake-gui&amp;utm_campaign=badger"><img src="https://api.codacy.com/project/badge/Grade/3e71f53ba7774984929858de3490f1d9" alt="Codacy Badge"></a>
+<a href="https://ci.appveyor.com/project/TitanSnow/ts-xmake-gui"><img src="https://ci.appveyor.com/api/projects/status/4rvf8go6kjy6ds9l?svg=true" alt="Build status"></a></p>
+<p>An ugly xmake gui <img class="emoji" alt=":tada:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f389.png" width="20" height="20"></p>
+<h2 id="branches">branches</h2>
+<ul>
+<li><em>legacy</em> (not recommended)</li>
+<li><em>posix</em> (for posix users, recommended)</li>
+<li><em>nt</em> (for Windows users, <em>not</em> recommended)</li>
+<li><em>3</em> (the python3 version of branch legacy)</li>
+<li><em>4</em> (the python3 version of branch posix)</li>
+<li><em>newnt</em> (new Windows version! recommended)</li>
+</ul>
+<h2 id="on-posix">on posix</h2>
+<pre><code class="lang-console">$ ./configure
+</code></pre>
+<h2 id="on-windows">on Windows</h2>
+<p>just download the file from <a href="https://github.com/TitanSnow/ts-xmake-gui/releases">release</a></p>
+<p><sub>note: not support Windows XP but you could build by yourself to make it be able to run on XP. See below</sub></p>
+<h3 id="build">build</h3>
+<p>the steps of build is listed in <a href="https://github.com/TitanSnow/ts-xmake-gui/blob/newnt/.appveyor.yml">.appveyor.yml</a></p>
+<h2 id="little-note">little note</h2>
+<p>there is a cross-platform pseudo terminal (pty) solution in this repo to capture console app&#39;s output if you&#39;re interested in it</p>
+<h2 id="demo">demo</h2>
+<h3 id="configure">configure</h3>
+<p><video src="https://github.com/TitanSnow/ts-xmake-gui/blob/posix/docs/demo/01-configure.mp4?raw=true" autoplay loop></video></p>
+<h3 id="one-key-build">one key build</h3>
+<p><video src="https://github.com/TitanSnow/ts-xmake-gui/blob/posix/docs/demo/02-one-key-build.mp4?raw=true" autoplay loop></video></p>
+<h3 id="config">config</h3>
+<p><video src="https://github.com/TitanSnow/ts-xmake-gui/blob/posix/docs/demo/03-config.mp4?raw=true" autoplay loop></video></p>
+<h3 id="run">run</h3>
+<p><video src="https://github.com/TitanSnow/ts-xmake-gui/blob/posix/docs/demo/04-run.mp4?raw=true" autoplay loop></video></p>
+<h3 id="shell">shell</h3>
+<p><video src="https://github.com/TitanSnow/ts-xmake-gui/blob/posix/docs/demo/05-shell.mp4?raw=true" autoplay loop></video></p>
+</div>

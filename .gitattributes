@@ -1,0 +1,5 @@
+demo/04-run.mp4 filter=lfs diff=lfs merge=lfs -text
+demo/05-shell.mp4 filter=lfs diff=lfs merge=lfs -text
+demo/01-configure.mp4 filter=lfs diff=lfs merge=lfs -text
+demo/02-one-key-build.mp4 filter=lfs diff=lfs merge=lfs -text
+demo/03-config.mp4 filter=lfs diff=lfs merge=lfs -text
