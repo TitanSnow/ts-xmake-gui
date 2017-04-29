@@ -433,8 +433,9 @@ class MainWin(tk.Frame):
     def console_walklist(self,tn):
         console=self.console
         if console.inputlist:
-                console.inputcur+=tn
-                self.inputbar_text.set(console.inputlist[console.inputcur%len(console.inputlist)])
+            console.inputcur+=tn
+            self.inputbar_text.set(console.inputlist[console.inputcur%len(console.inputlist)])
+            self.inputbar.icursor(tk.END)
 
     @error_handle
     def console_shut(self):
