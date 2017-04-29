@@ -36,7 +36,7 @@ class EscapeDeleter:
             ess=''.join(self.__escapes)
             self.__escapes=[]
             rst=re.search(r'^\x1b\[(\d+)(?:;(\d+))?$',ess)
-            if rst:
+            if rst and st=='m':
                 for tag in [int(x or '0') for x in rst.groups() if x!=None]:
                     if tag==0:
                         self.__tag=[]
