@@ -103,6 +103,7 @@ class MainWin(tk.Frame):
         self.console.insert_queue=[]
         self.console.linebuf=[]
         self.console.inputlist=[]
+        self.console.inputcur=0
         self.console.escape_deleter=EscapeDeleter(self.console)
         self.console.delete_escape=self.console.escape_deleter.delete_escape
         self.console.bind("<<insert>>",self.console_insert)
@@ -116,7 +117,7 @@ class MainWin(tk.Frame):
         self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
         self.inputbar.bind("<Control-d>",lambda e:self.console_shut())
         self.inputbar.bind("<Up>",lambda e:self.console_walklist(-1))
-        self.inputbar.bind("<Down>",lambda e:self.console_walklist(0))
+        self.inputbar.bind("<Down>",lambda e:self.console_walklist(1))
 
         self.btnsend=tk.Button(self,text="Send Input",width=0,command=self.console_sendinput,state=tk.DISABLED)
         self.btnsend.grid(sticky=NEWS,row=9,column=5)
@@ -424,6 +425,7 @@ class MainWin(tk.Frame):
     def console_sendinput(self):
         st=self.inputbar_text.get()
         self.console.inputlist.append(st)
+        self.console.inputcur=0
         os.write(self.fd,(st+'\n').encode('utf8'))
         self.inputbar_text.set("")
 
@@ -431,12 +433,8 @@ class MainWin(tk.Frame):
     def console_walklist(self,tn):
         console=self.console
         if console.inputlist:
-            if tn==-1:
-                self.inputbar_text.set(console.inputlist[-1])
-                console.inputlist.insert(0,console.inputlist.pop())
-            elif tn==0:
-                self.inputbar_text.set(console.inputlist[0])
-                console.inputlist.append(console.inputlist.pop(0))
+                console.inputcur+=tn
+                self.inputbar_text.set(console.inputlist[console.inputcur%len(console.inputlist)])
 
     @error_handle
     def console_shut(self):
