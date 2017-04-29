@@ -434,6 +434,8 @@ class MainWin(tk.Frame):
 
 @error_handle
 def main():
+    os.environ['LANG']='POSIX'
+    os.environ['LC_ALL']='POSIX'
     root=tk.Tk()
     win=MainWin(root)
     root.title("xmake")
