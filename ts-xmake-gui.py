@@ -412,7 +412,7 @@ class MainWin(tk.Frame):
                         val=int(rst.groups()[0])
                         self.progress.config(value=val)
                     elif re.search('^please input:',st):
-                        os.write(self.fd,(askstring('Input Requested',st) or '')+'\n')
+                        os.write(self.fd,((askstring('Input Requested',st) or '')+'\n').encode('utf8'))
                     console.linebuf=[]
                 else:
                     console.linebuf.append(st)
@@ -421,7 +421,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def console_sendinput(self):
-        os.write(self.fd,self.inputbar_text.get()+'\n')
+        os.write(self.fd,(self.inputbar_text.get()+'\n').encode('utf8'))
         self.inputbar_text.set("")
 
     @error_handle
@@ -434,6 +434,8 @@ class MainWin(tk.Frame):
 
 @error_handle
 def main():
+    os.environ['LANG']='en_US.UTF-8'
+    os.environ['LC_ALL']='en_US.UTF-8'
     root=tk.Tk()
     win=MainWin(root)
     root.title("xmake")
