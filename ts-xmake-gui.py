@@ -98,7 +98,7 @@ class MainWin(tk.Frame):
         self.label_console=tk.Label(self,text="Console")
         self.label_console.grid(sticky=NEWS,row=9,columnspan=3)
 
-        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15)
+        self.console=tk.Text(self,state=tk.DISABLED,width=0,height=15,font="TkFixedFont")
         self.console.grid(sticky=NEWS,row=7,columnspan=6)
         self.console.insert_queue=[]
         self.console.linebuf=[]
