@@ -1,6 +1,7 @@
 # ts-xmake-gui
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3e71f53ba7774984929858de3490f1d9)](https://www.codacy.com/app/TitanSnow/ts-xmake-gui?utm_source=github.com&utm_medium=referral&utm_content=TitanSnow/ts-xmake-gui&utm_campaign=badger)
+[![Build Status](https://travis-ci.org/TitanSnow/ts-xmake-gui.svg?branch=master)](https://travis-ci.org/TitanSnow/ts-xmake-gui)
 [![Build status](https://ci.appveyor.com/api/projects/status/4rvf8go6kjy6ds9l?svg=true)](https://ci.appveyor.com/project/TitanSnow/ts-xmake-gui)
 
 An ugly xmake gui :tada:
