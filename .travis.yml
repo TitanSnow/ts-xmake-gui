@@ -1,0 +1,8 @@
+language: bash
+sudo: required
+dist: trusty
+os:
+  - linux
+  - osx
+script:
+  - ./configure
