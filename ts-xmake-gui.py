@@ -15,6 +15,7 @@ from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
 from threading import Timer
+from capture_output import libwinpty
 
 min_xmake_ver=20000100003L
 VER="2wd170419 (nt)"
@@ -153,9 +154,10 @@ class MainWin(tk.Frame):
         if target:
             arglist.append(target)
         def reflesh():
-            if self.pty:
-                pty=self.pty
-                #Timer(1,lambda :libcapture_output.free_pty(pty))
+            def free_pty():
+                if self.pty:
+                    libwinpty.winpty_free(self.pty)
+            Timer(1,free_pty)
             self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
@@ -385,7 +387,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def console_kill(self):
-        #libcapture_output.free_pty(self.pty)
+        libwinpty.winpty_free(self.pty)
         self.pty=None
 
 @error_handle
