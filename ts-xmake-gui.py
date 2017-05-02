@@ -14,7 +14,6 @@ import webbrowser as wb
 from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
-from capture_output_wrapper import libcapture_output
 from threading import Timer
 
 min_xmake_ver=20000100003L
@@ -156,7 +155,7 @@ class MainWin(tk.Frame):
         def reflesh():
             if self.pty:
                 pty=self.pty
-                Timer(1,lambda :libcapture_output.free_pty(pty))
+                #Timer(1,lambda :libcapture_output.free_pty(pty))
             self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
@@ -386,7 +385,7 @@ class MainWin(tk.Frame):
 
     @error_handle
     def console_kill(self):
-        libcapture_output.free_pty(self.pty)
+        #libcapture_output.free_pty(self.pty)
         self.pty=None
 
 @error_handle

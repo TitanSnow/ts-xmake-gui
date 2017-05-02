@@ -1,6 +1,6 @@
 import tk
 from argsToCommandLine import argsToCommandLine
-from capture_output_wrapper import capture_output
+from capture_output import capture_output
 import re
 from threading import Thread,Event
 def run_in_async(console,args,callback):

@@ -1,4 +1,4 @@
 [submodule "winpty"]
-	path = capture_output/winpty
+	path = winpty
 	url = https://github.com/TitanSnow/winpty.git
 	branch = xmake
