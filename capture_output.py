@@ -3,7 +3,7 @@ assert sizeof(c_wchar)==2
 libwinpty=CDLL("winpty")
 class WinptyError(Exception):
     pass
-def capture_output(appname,cmdline,cwd,env):
+def capture_output(appname,cmdline,cwd,env,width,height):
     if appname!=None:
         appname=c_wchar_p(unicode(appname))
     if cmdline!=None:
@@ -14,6 +14,8 @@ def capture_output(appname,cmdline,cwd,env):
         env=c_wchar_p(unicode(env))
     config=c_void_p(libwinpty.winpty_config_new(c_ulonglong(0x2),None))
     if not config:raise WinptyError()
+    if width and height:
+        libwinpty.winpty_config_set_initial_size(config,c_int(width),c_int(height))
     pty=c_void_p(libwinpty.winpty_open(config,None))
     libwinpty.winpty_config_free(config)
     if not pty:raise WinptyError()
