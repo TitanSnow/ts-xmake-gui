@@ -93,7 +93,7 @@ class MainWin(tk.Frame):
         self.configarea=tk.Text(self,width=0,height=10)
         self.configarea.grid(sticky=NEWS,row=6,column=2,columnspan=4)
 
-        self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...",foreground="gray")
+        self.label_xmake_path=tk.Label(self,text="xmake path: xmake\t..Checking...",foreground="darkgray")
         self.label_xmake_path.grid(sticky=NEWS,row=10,columnspan=6)
 
         self.label_console=tk.Label(self,text="Console")
