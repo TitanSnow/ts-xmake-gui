@@ -3,43 +3,25 @@ skip_tags: false
 branches:
   only:
     - newnt
-clone_depth: 50
+clone_depth: 1
 platform: x86
 install:
   - cmd: git submodule update --init
-  - ps: Invoke-WebRequest "https://github.com/tboox/xmake/releases/download/v2.1.3/xmake-v2.1.3.exe" -OutFile "xmake-installer.exe"
-  - cmd: xmake-installer.exe /S /D=C:\xmake
-  - cmd: PATH=%PATH%;C:\xmake
-  - ps: Remove-Item xmake-installer.exe
-  - cmd: pip install pyinstaller
+  - ps: Invoke-Expression (Invoke-Webrequest 'https://raw.githubusercontent.com/tboox/xmake/master/scripts/get.ps1' -UseBasicParsing).Content
 build_script:
-  - cmd: cd capture_output
-  - cmd: xmake -v
-  - cmd: cd build
-  - ps: Copy-Item winpty.dll,capture_output.dll,winpty-agent.exe ..\..
-  - cmd: cd ..\..
-  - ps: Remove-Item -Recurse -Force capture_output
+  - ps: .\build.ps1
 after_build:
-  - ps: Remove-Item -Recurse -Force .git
-  - cmd: cd ..
-  - cmd: mkdir temp
-  - ps: Move-Item ts-xmake-gui temp
-  - ps: Move-Item temp ts-xmake-gui
-  - cmd: cd ts-xmake-gui
-  - ps: Copy-Item -Recurse ts-xmake-gui ts-xmake-gui-installer
-  - cmd: cd ts-xmake-gui-installer
-  - cmd: pyinstaller -w ts-xmake-gui.py
-  - ps: Copy-Item -Force winpty.dll,capture_output.dll,winpty-agent.exe dist\ts-xmake-gui
-  - cmd: cd ..
-  - ps: Move-Item ts-xmake-gui-installer\dist\ts-xmake-gui ts-xmake-gui-newnt-bundle
+  - ps: cd ..
+  - ps: Move-Item ts-xmake-gui ts-xmake-gui-bk
+  - ps: New-Item ts-xmake-gui -Type directory
+  - ps: Move-Item ts-xmake-gui-bk ts-xmake-gui\ts-xmake-gui
+  - ps: cd ts-xmake-gui
 artifacts:
   - path: ts-xmake-gui
     name: ts-xmake-gui-newnt
-  - path: ts-xmake-gui-newnt-bundle
-    name: ts-xmake-gui-newnt-bundle
 deploy:
   - provider: GitHub
-    artifact: ts-xmake-gui-newnt,ts-xmake-gui-newnt-bundle
+    artifact: ts-xmake-gui-newnt
     draft: true
     description: 'temp'
     on:
