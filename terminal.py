@@ -2,7 +2,8 @@ import tk
 from argsToCommandLine import argsToCommandLine
 from capture_output import capture_output
 import re
-from threading import Thread,Event
+from threading import Thread
+from tkFont import nametofont
 def run_in_async(console,args,callback):
     def insert(st):
         console.insert_queue.append(st)
@@ -10,23 +11,20 @@ def run_in_async(console,args,callback):
     console.config(state=tk.NORMAL)
     console.delete(1.0,tk.END)
     console.config(state=tk.DISABLED)
-    pty,conin,conout=capture_output(None,argsToCommandLine(args),None,None)
-    fo=open(conin,"w")
+    w=console.winfo_width()
+    w//=nametofont(console['font']).measure('0')
+    h=console.winfo_height()
+    h//=nametofont(console['font']).metrics()['linespace']
+    pty,conin,conout=capture_output(None,argsToCommandLine(args),None,None,w,h)
+    fo=open(conin,"w",0)
     def wait():
-        with open(conout,"r") as f:
+        with open(conout,"r",0) as f:
             try:
                 while True:
-                    st=f.readline()
+                    st=f.read(1)
                     if not st:
                         break
                     insert(st)
-                    if re.search('^please input:',st):
-                        console.ask_event=Event()
-                        console.ask_param=('Input Requested',st)
-                        console.event_generate("<<ask>>",when="tail")
-                        console.ask_event.wait()
-                        fo.write((console.ask_result or '')+'\n')
-                        fo.flush()
             except IOError:
                 pass
         callback()
