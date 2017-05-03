@@ -115,6 +115,7 @@ class MainWin(tk.Frame):
         self.inputbar.grid(sticky=NEWS,row=8,column=3,columnspan=3)
         self.inputbar.bind("<Return>",lambda e:self.console_sendinput())
         self.inputbar.bind("<Control-d>",lambda e:self.console_shut())
+        self.inputbar.bind("<Control-z>",lambda e:self.console_shut())
         self.inputbar.bind("<Up>",lambda e:self.console_walklist(-1))
         self.inputbar.bind("<Down>",lambda e:self.console_walklist(1))
 
