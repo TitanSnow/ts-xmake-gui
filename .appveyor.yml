@@ -11,6 +11,7 @@ install:
 build_script:
   - ps: .\build.ps1
 after_build:
+  - cmd: xmake clean -P winpty\src
   - ps: cd ..
   - ps: Move-Item ts-xmake-gui ts-xmake-gui-bk
   - ps: New-Item ts-xmake-gui -Type directory
