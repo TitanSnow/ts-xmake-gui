@@ -1,2 +1,2 @@
-xmake -P winpty\src
-Copy-Item winpty\src\build\winpty.dll,winpty\src\build\winpty-agent.exe .
+xmake -P winpty
+Copy-Item winpty\build\winpty.dll,winpty\build\winpty-agent.exe .
