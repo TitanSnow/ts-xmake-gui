@@ -25,6 +25,7 @@ class EscapeDeleter:
         self.__escaped=False
         self.__tag=[]
         self.__escapes=[]
+        self.__esop=None
         if text:
             for key,val in COLOR_TABLE.items():
                 text.tag_config(key,**val)
@@ -33,21 +34,29 @@ class EscapeDeleter:
             return ''.join([self.delete_escape(ch) for ch in st])
         if st=='\x1b':
             self.__escaped=True
-        elif self.__escaped and not re.search(r'^(?:\d|;|\[|)$',st):
-            self.__escaped=False
-            ess=''.join(self.__escapes)
-            self.__escapes=[]
-            rst=re.search(r'^\x1b\[(\d+)(?:;(\d+))?$',ess)
-            if rst and st=='m':
-                for tag in [int(x or '0') for x in rst.groups() if x!=None]:
-                    if tag==0:
-                        self.__tag=[]
-                    elif str(tag) in COLOR_TABLE:
-                        self.__tag=[x for x in self.__tag if x[0]!=str(tag)[0]]+[str(tag)]
-        elif not self.__escaped and st!='\r':
+            self.__esop=None
+        elif self.__escaped:
+            if not self.__esop:
+                self.__esop=st
+            elif self.__esop=='[':
+                if not re.search(r'^(?:\d|;|)$',st):
+                    self.__escaped=False
+                    ess=''.join(self.__escapes)
+                    self.__escapes=[]
+                    rst=re.search(r'^(\d+)(?:;(\d+))?$',ess)
+                    if rst and st=='m':
+                        for tag in [int(x or '0') for x in rst.groups() if x!=None]:
+                            if tag==0:
+                                self.__tag=[]
+                            elif str(tag) in COLOR_TABLE:
+                                self.__tag=[x for x in self.__tag if x[0]!=str(tag)[0]]+[str(tag)]
+                else:
+                    self.__escapes.append(st)
+            elif self.__esop==']':
+                if st=='\x07':
+                    self.__escaped=False
+        elif st!='\r':
             return st
-        if self.__escaped:
-            self.__escapes.append(st)
         return ''
     def get_tag(self):
         return tuple(self.__tag) or None
