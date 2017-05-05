@@ -387,7 +387,7 @@ class MainWin(tk.Frame):
                 self.reflesh_configarea()
                 self.fd=None
             self.disable_all()
-            self.pid,self.fo=terminal.run_in_async(self.console,[os.getenv("COMSPEC") or "cmd.exe"],reflesh)
+            self.pty,self.fo=terminal.run_in_async(self.console,[os.getenv("COMSPEC") or "cmd.exe"],reflesh)
 
     @error_handle
     def console_insert(self,e):
