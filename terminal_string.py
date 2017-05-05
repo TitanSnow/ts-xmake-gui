@@ -8,6 +8,7 @@ COLOR_TABLE={
     "35":{"foreground":"#CD00CD"},
     "36":{"foreground":"#00CDCD"},
     "37":{"foreground":"#E5E5E5"},
+    "39":{},#foreground reset
 
     "40":{"background":"#000000"},
     "41":{"background":"#CD0000"},
@@ -16,7 +17,8 @@ COLOR_TABLE={
     "44":{"background":"#0000EE"},
     "45":{"background":"#CD00CD"},
     "46":{"background":"#00CDCD"},
-    "47":{"background":"#E5E5E5"}
+    "47":{"background":"#E5E5E5"},
+    "49":{},#background reset
 }
 class EscapeDeleter:
     def __init__(self,text=None):
