@@ -387,7 +387,7 @@ class MainWin(tk.Frame):
                 self.reflesh_configarea()
                 self.fd=None
             self.disable_all()
-            self.pid,self.fd=terminal.run_in_async(self.console,[os.getenv("COMSPEC") or "cmd.exe"],reflesh)
+            self.pid,self.fo=terminal.run_in_async(self.console,[os.getenv("COMSPEC") or "cmd.exe"],reflesh)
 
     @error_handle
     def console_insert(self,e):
@@ -468,7 +468,7 @@ def main():
     mn_chores.add_command(label="Version",command=win.action_version)
     mn_chores.add_command(label="Help",command=win.action_help)
     mn_chores.add_separator()
-    mn_chores.add_command(label="Shell",command=win.action_shell,state=tk.DISABLED)
+    mn_chores.add_command(label="Shell",command=win.action_shell)
     #mn_chores.add_command(label="Color test",command=win.action_color)
     mn_chores.add_command(label="Exit",command=stop_all)
     menubar.add_cascade(label="Chores",menu=mn_chores)
