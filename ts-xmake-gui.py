@@ -445,7 +445,7 @@ def main():
     root.title("xmake")
     @error_handle
     def show_about():
-        showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
+        showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under Apache License 2.0\nHosted on github.com/TitanSnow/ts-xmake-gui")
     @error_handle
     def show_help():
         wb.open("https://github.com/TitanSnow/ts-xmake-gui/blob/master/README.md",1,True)
