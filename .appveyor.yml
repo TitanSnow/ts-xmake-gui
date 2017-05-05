@@ -2,16 +2,17 @@ version: No.{build}
 skip_tags: false
 branches:
   only:
-    - newnt
+    - newnt-gyp
 clone_depth: 1
 platform: x86
-install:
+before_build:
   - cmd: git submodule update --init
-  - ps: Invoke-Expression (Invoke-Webrequest 'https://raw.githubusercontent.com/tboox/xmake/master/scripts/get.ps1' -UseBasicParsing).Content
 build_script:
-  - ps: .\build.ps1
+  - cmd: cd winpty
+  - cmd: vcbuild.bat --msvc-platform Win32
+  - cmd: cd ..
+  - ps: Copy-Item winpty\src\Release\Win32\winpty-agent.exe,winpty\src\Release\Win32\winpty.dll .
 after_build:
-  - cmd: xmake clean -P winpty
   - ps: cd ..
   - ps: Move-Item ts-xmake-gui ts-xmake-gui-bk
   - ps: New-Item ts-xmake-gui -Type directory
