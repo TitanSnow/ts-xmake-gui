@@ -15,18 +15,22 @@ from unnamed_exception import *
 from os import path
 from tkSimpleDialog import askstring
 from terminal_string import EscapeDeleter,COLOR_TABLE
+from raven import Client
 
 min_xmake_ver=20000100003L
 VER="ts-xmake-gui"
 NEWS=tk.W+tk.E+tk.N+tk.S
 
 tiped_exception=set()
+track_client=Client('https://0f9badbc2140441fb4ce7a664c9e1fd4:3acaa2f8fdbb4f349a3b0de88dfde706@sentry.io/165140')
 def error_handle(func):
     def _func(*args,**kwargs):
         try:
             return func(*args,**kwargs)
         except Exception as err:
-            if not err in tiped_exception:showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug report:\ngithub.com/TitanSnow/ts-xmake-gui/issues")
+            if not err in tiped_exception:
+                track_client.captureException()
+                showerror("Internal Exception","Sorry, there is an internal exception happened\n\nDetail:\n"+str(err)+"\n\nBug has reported")
             tiped_exception.add(err)
             raise
     return _func
@@ -454,7 +458,7 @@ def main():
     root.title("xmake")
     @error_handle
     def show_about():
-        showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui")
+        showinfo("About","ts-xmake-gui\nAn ugly xmake gui\n\nMaintained by TitanSnow\nLicensed under The Unlicense\nHosted on github.com/TitanSnow/ts-xmake-gui\n\nUsing sentry.io for bug reporting. Promise no proactively privacy collecting")
     @error_handle
     def show_help():
         wb.open("https://github.com/TitanSnow/ts-xmake-gui/blob/master/README.md",1,True)

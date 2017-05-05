@@ -1,8 +1,8 @@
 #!/bin/bash
 set -o pipefail
-if [ 0 -ne $(id -u) ]
+if [ 0 -ne "$(id -u)" ]
 then
-    sudoprefix=sudo
+    sudoprefix='sudo -H'
 else
     sudoprefix=
 fi
@@ -18,7 +18,7 @@ my_exit(){
     then
         if [ $rv -eq 0 ];then rv=$2;fi
     fi
-    exit $rv
+    exit "$rv"
 }
 test_tools()
 {
@@ -29,11 +29,12 @@ test_tools()
 }
 install_tools()
 {
-    { apt-get --version >/dev/null 2>&1 && $sudoprefix apt-get install -y curl python python-tk; } ||
-    { yum --version >/dev/null 2>&1 && $sudoprefix yum install -y curl python tkinter; } ||
-    { zypper --version >/dev/null 2>&1 && $sudoprefix zypper --non-interactive install curl python python-tk; } ||
-    { pacman -V >/dev/null 2>&1 && $sudoprefix pacman -S --noconfirm --needed curl python2 tk; } ||
-    { brew --version >/dev/null 2>&1 && brew install python --with-tcl-tk curl; }
+    { apt-get --version >/dev/null 2>&1 && $sudoprefix apt-get install -y curl python python-tk python-pip; } ||
+    { yum --version >/dev/null 2>&1 && $sudoprefix yum install -y curl python tkinter python-pip; } ||
+    { zypper --version >/dev/null 2>&1 && $sudoprefix zypper --non-interactive install curl python python-tk python-pip; } ||
+    { pacman -V >/dev/null 2>&1 && $sudoprefix pacman -S --noconfirm --needed curl python2 tk python2-pip; } ||
+    { brew --version >/dev/null 2>&1 && brew install python --with-tcl-tk; } &&
+    { $sudoprefix pip2 install -r requirement.txt || $sudoprefix pip install -r requirement.txt; }
 }
 test_tools || { install_tools && test_tools; } || my_exit 'Dependencies Installation Fail' 1
 xmake --version >/dev/null 2>&1 || bash <(curl -fsSL https://raw.githubusercontent.com/tboox/xmake/master/scripts/get.sh) && echo "Finish. Use \`$(if python -c '__import__("ts-xmake-gui")' >/dev/null 2>&1;then echo './';else echo 'python2 ';fi)ts-xmake-gui.py\` to launch"
