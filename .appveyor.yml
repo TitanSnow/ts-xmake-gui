@@ -2,9 +2,11 @@ version: No.{build}
 skip_tags: false
 branches:
   only:
-    - newnt-gyp
+    - newnt-single
 clone_depth: 1
 platform: x86
+install:
+  - cmd: pip install pyinstaller
 before_build:
   - cmd: git submodule update --init
 build_script:
@@ -13,18 +15,9 @@ build_script:
   - cmd: cd ..
   - ps: Copy-Item winpty\src\Release\Win32\winpty-agent.exe,winpty\src\Release\Win32\winpty.dll .
 after_build:
-  - ps: Copy-Item winpty\LICENSE .\winpty-LICENSE
-  - ps: Remove-Item -Recurse -Force winpty
-  - ps: New-Item winpty -Type directory
-  - ps: Move-Item winpty-LICENSE winpty\LICENSE
-  - ps: Remove-Item -Recurse -Force .git
-  - ps: cd ..
-  - ps: Move-Item ts-xmake-gui ts-xmake-gui-bk
-  - ps: New-Item ts-xmake-gui -Type directory
-  - ps: Move-Item ts-xmake-gui-bk ts-xmake-gui\ts-xmake-gui
-  - ps: cd ts-xmake-gui
+  - cmd: pyinstaller -F -w --add-binary winpty-agent.exe;. ts-xmake-gui.py
 artifacts:
-  - path: ts-xmake-gui
+  - path: dist\ts-xmake-gui.exe
     name: ts-xmake-gui-newnt
 deploy:
   - provider: GitHub
