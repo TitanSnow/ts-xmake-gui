@@ -7,6 +7,8 @@ clone_depth: 1
 platform: x86
 install:
   - cmd: pip install pyinstaller
+  - ps: Invoke-Webrequest 'https://github.com/upx/upx/releases/download/v3.93/upx393w.zip' -OutFile 'upx393w.zip'
+  - ps: Expand-Archive 'upx393w.zip'
 before_build:
   - cmd: git submodule update --init
 build_script:
@@ -15,7 +17,7 @@ build_script:
   - cmd: cd ..
   - ps: Copy-Item winpty\src\Release\Win32\winpty-agent.exe,winpty\src\Release\Win32\winpty.dll .
 after_build:
-  - cmd: pyinstaller -F -w --add-binary winpty-agent.exe;. ts-xmake-gui.py
+  - cmd: pyinstaller -F -w --add-binary winpty-agent.exe;. ts-xmake-gui.py --upx-dir upx393w\upx393w
 artifacts:
   - path: dist\ts-xmake-gui.exe
     name: ts-xmake-gui-newnt
