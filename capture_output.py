@@ -1,6 +1,6 @@
 from ctypes import *
 assert sizeof(c_wchar)==2
-libwinpty=CDLL("winpty")
+libwinpty=CDLL("winpty.dll")
 class WinptyError(Exception):
     pass
 def capture_output(appname,cmdline,cwd,env,width,height):
