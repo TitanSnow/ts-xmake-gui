@@ -8,7 +8,7 @@ from shutil import rmtree
 import conf_parse as cp
 import json
 from tkMessageBox import showinfo,showerror,askokcancel
-import subprocess as sp
+import sp
 import re
 import webbrowser as wb
 from unnamed_exception import *
