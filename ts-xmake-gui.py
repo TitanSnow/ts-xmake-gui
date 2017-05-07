@@ -161,10 +161,9 @@ class MainWin(tk.Frame):
         if target:
             arglist.append(target)
         def reflesh():
-            def free_pty():
-                if self.pty:
-                    libwinpty.winpty_free(self.pty)
-            Timer(1,free_pty)
+            if self.pty:
+                pty=self.pty
+                Timer(1,lambda :libwinpty.winpty_free(pty))
             self.enable_all()
             self.reflesh_target_list()
             self.reflesh_configarea()
